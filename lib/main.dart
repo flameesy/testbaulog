@@ -1,45 +1,84 @@
-// main.dart
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:path/path.dart' as path;
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart'
+if (dart.library.html) 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:testbaulog/screens/add_appointment_page.dart';
+import 'package:testbaulog/screens/appointments_page.dart';
+import 'package:testbaulog/screens/home_page.dart';
+import 'package:testbaulog/screens/rooms_page.dart';
 import 'package:testbaulog/screens/settings_page.dart';
-import 'screens/login_page.dart';
-import 'helpers/database_helper.dart';
-import 'theme/baulog_theme.dart';
+import 'package:testbaulog/screens/login_page.dart';
+import 'package:testbaulog/theme/baulog_theme.dart';
+import 'package:testbaulog/helpers/database_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  databaseFactory = databaseFactoryFfiWeb;
-  final Database database = await openDatabase('baulog.db');
-  final DatabaseHelper dbHelper = DatabaseHelper(database: database);
 
-  //await dbHelper.createUserTable(); // Ensure USERS table exists
-  //await dbHelper.insertUser('test@example.com', 'password123');
-
+  late Database database;
+  if (kIsWeb) {
+    database = await databaseFactoryFfiWeb.openDatabase(inMemoryDatabasePath);
+    databaseFactory = databaseFactoryFfiWeb;
+    database = await openDatabase('baulog.db');
+  } else {
+    String databasesPath = await getDatabasesPath();
+    String dbPath = path.join(databasesPath, 'baulog.db');
+    database = await openDatabase(
+      dbPath,
+      onCreate: (db, version) {
+        // Create tables if they don't exist
+        return DatabaseHelper(database: db).createTablesIfNotExists();
+      },
+      version: 1,
+    );
+  }
 
   runApp(MyApp(database: database));
 }
 
 class MyApp extends StatelessWidget {
-  final Database database;
+final Database database;
 
-  const MyApp({super.key, required this.database});
+const MyApp({Key? key, required this.database}) : super(key: key);
+
+@override
+Widget build(BuildContext context) {
+return MaterialApp(
+title: 'BauLog',
+initialRoute: '/login',
+routes: {
+'/': (context) => AppWithAppBarAndDrawer(
+child: HomePage(database: database),
+),
+'/login': (context) => AppWithAppBarAndDrawer(
+child: LoginPage(database: database),
+),
+'/termine': (context) => AppWithAppBarAndDrawer(
+child: AppointmentsPage(database: database),
+),
+'/rooms': (context) => AppWithAppBarAndDrawer(
+child: RoomsPage(database: database),
+),
+'/einstellungen': (context) => AppWithAppBarAndDrawer(
+child: SettingsPage(database: database),
+),
+},
+theme: BauLogTheme.getTheme(),
+);
+}
+}
+
+class AppWithAppBarAndDrawer extends StatelessWidget {
+  final Widget child;
+
+  const AppWithAppBarAndDrawer({Key? key, required this.child})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'BauLog',
-      initialRoute: '/', // Set initial route to login page
-      routes: {
-        '/': (context) => AddAppointmentPage(database: database),
-        '/login': (context) => LoginPage(database: database),
-        '/termine': (context) => AddAppointmentPage(database: database),
-        '/settings': (context) => SettingsPage(database: database),
-        // Add other routes as needed
-      },
-      theme: BauLogTheme.getTheme(), // Apply BauLogTheme
+    return Scaffold(
+      body: child,
     );
   }
 }

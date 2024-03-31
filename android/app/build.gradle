@@ -4,58 +4,42 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
-}
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
+def flutterVersionCode = 1
+def flutterVersionName = "1.0"
 
 android {
-    namespace "com.example.testbaulog"
-    compileSdk flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
+    compileSdkVersion 33
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.testbaulog"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
+        targetSdkVersion 30
+        versionCode flutterVersionCode
         versionName flutterVersionName
+        namespace 'com.example.testbaulog'
+    }
+
+    signingConfigs {
+        release {
+            try {
+                def keystorePropertiesFile = rootProject.file("key.properties")
+                def keystoreProperties = new Properties()
+                keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+                storeFile file("baulog_key.keystore")
+                storePassword "admin123"
+                keyAlias "baulogkey"
+                keyPassword "admin123"
+            } catch (ex) {
+                println "Keystore file or properties not found"
+                throw new InvalidUserDataException("You should define key.properties file with keystore properties.")
+            }
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }
@@ -64,4 +48,6 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    // Hier kannst du deine Abhängigkeiten hinzufügen, wenn du welche hast
+}

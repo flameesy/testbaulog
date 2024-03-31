@@ -7,7 +7,9 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_drawer.dart';
 
 class AddAppointmentPage extends StatefulWidget {
-  const AddAppointmentPage({Key? key, required Database database}) : super(key: key);
+  const AddAppointmentPage({Key? key, required this.database}) : super(key: key);
+
+  final Database database;
 
   @override
   _AddAppointmentPageState createState() => _AddAppointmentPageState();
@@ -15,35 +17,19 @@ class AddAppointmentPage extends StatefulWidget {
 
 class _AddAppointmentPageState extends State<AddAppointmentPage> {
   final TextEditingController _appointmentController = TextEditingController();
-  late Database _database;
   late DatabaseHelper _databaseHelper;
   late List<Map<String, dynamic>> _terminEntries = [];
 
   @override
   void initState() {
     super.initState();
-    initializeDatabase();
-  }
-
-  Future<void> initializeDatabase() async {
-    _database = await openDatabase(
-      join(await getDatabasesPath(), 'baulog.db'),
-      onCreate: (db, version) {
-        return db.execute(
-          'CREATE TABLE IF NOT EXISTS appointments(id INTEGER PRIMARY KEY, appointment_name TEXT)',
-        );
-      },
-      version: 1,
-    );
-
-    _databaseHelper = DatabaseHelper(database: _database);
-
+    _databaseHelper = DatabaseHelper(database: widget.database);
     // Fetch TERMIN entries after initializing the database
     fetchTerminEntries();
   }
 
   Future<void> fetchTerminEntries() async {
-    final terminEntries = await _databaseHelper.fetchTerminEntries();
+    final terminEntries = await _databaseHelper.fetchAppointments();
     setState(() {
       _terminEntries = terminEntries;
     });
@@ -51,7 +37,7 @@ class _AddAppointmentPageState extends State<AddAppointmentPage> {
 
   void _addAppointment(BuildContext context) async {
     final String appointment = _appointmentController.text;
-    await _databaseHelper.insertAppointment(appointment);
+    await _databaseHelper.fetchAppointments();
     // Refresh TERMIN entries
     await fetchTerminEntries();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -98,7 +84,7 @@ class _AddAppointmentPageState extends State<AddAppointmentPage> {
                     trailing: IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () {
-                        _deleteAppointment(terminEntry['id']);
+                        _deleteAppointment(terminEntry['id'] as int);
                       },
                     ),
                   );

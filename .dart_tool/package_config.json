@@ -116,6 +116,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "intl",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/intl-0.19.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "js",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/js-0.6.7",
       "packageUri": "lib/",
@@ -170,10 +176,58 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "path_provider",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider-2.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "path_provider_android",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_android-2.2.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "path_provider_foundation",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_foundation-2.3.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "path_provider_linux",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_linux-2.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
+      "name": "path_provider_platform_interface",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_platform_interface-2.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "path_provider_windows",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/path_provider_windows-2.2.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
+    },
+    {
       "name": "pedantic",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/pedantic-1.11.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "platform",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/platform-3.1.4",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "plugin_platform_interface",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_interface-2.1.8",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "pool",
@@ -208,6 +262,12 @@
     {
       "name": "saslprep",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/saslprep-1.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "simple_gesture_detector",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/simple_gesture_detector-0.2.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -278,6 +338,12 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "table_calendar",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/table_calendar-3.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "term_glyph",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/term_glyph-1.2.1",
       "packageUri": "lib/",
@@ -320,6 +386,18 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "win32",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/win32-5.4.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "xdg_directories",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/xdg_directories-1.0.4",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "yaml",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.2",
       "packageUri": "lib/",
@@ -332,7 +410,7 @@
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2024-03-30T23:20:08.111105Z",
+  "generated": "2024-03-31T19:43:45.224952Z",
   "generator": "pub",
   "generatorVersion": "3.3.3"
 }

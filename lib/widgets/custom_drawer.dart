@@ -50,7 +50,7 @@ class CustomAppDrawer extends StatelessWidget {
             icon: Icons.room,
             title: 'Räume',
             onTap: () {
-              _navigateTo(context, '/raume');
+              _navigateTo(context, '/rooms');
             },
           ),
           _buildMenuItem(
@@ -66,7 +66,7 @@ class CustomAppDrawer extends StatelessWidget {
             icon: Icons.settings,
             title: 'Einstellungen',
             onTap: () {
-              _navigateTo(context, '/settings');
+              _navigateTo(context, '/einstellungen');
             },
           ),
           // Add more menu items as needed
@@ -76,21 +76,19 @@ class CustomAppDrawer extends StatelessWidget {
   }
 
   Widget _buildMenuItem(BuildContext context,
-      {required IconData icon, required String title, required Function onTap}) {
+      {required IconData icon, required String title, required VoidCallback onTap}) {
     return ListTile(
       leading: Icon(icon, color: Colors.orange), // Icon color set to orange
       title: Text(
         title,
         style: TextStyle(color: Colors.grey[800]), // Text color set to grey
       ),
-      onTap: () {
-        onTap();
-        Navigator.pop(context); // Close the drawer after navigation
-      },
+      onTap: onTap,
     );
   }
 
   void _navigateTo(BuildContext context, String routeName) {
+    Navigator.pop(context); // Close the drawer first
     Navigator.pushNamed(context, routeName); // Navigate to the specified route
   }
 }
