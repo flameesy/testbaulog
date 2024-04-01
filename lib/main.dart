@@ -11,6 +11,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart'
 if (dart.library.html) 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:testbaulog/screens/appointments_page.dart';
+import 'package:testbaulog/screens/email_page.dart';
 import 'package:testbaulog/screens/home_page.dart';
 import 'package:testbaulog/screens/rooms_page.dart';
 import 'package:testbaulog/screens/settings_page.dart';
@@ -103,6 +104,9 @@ Widget build(BuildContext context) {
       ),
       '/login': (context) => AppWrapper(
         child: LoginPage(database: database),
+      ),
+      '/mail': (context) => const AppWrapper(
+        child: EmailPage(),
       ),
       '/termine': (context) => AppWrapper(
         child: AppointmentsPage(database: database),

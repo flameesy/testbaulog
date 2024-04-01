@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:testbaulog/screens/appointment_detail_page.dart';
-
 import '../helpers/database_helper.dart';
+import '../widgets/filter_bar.dart'; // Import der FilterBar
 
 class AppointmentsPage extends StatefulWidget {
   final Database database;
@@ -38,37 +38,71 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     }
   }
 
+  // Method to filter appointments based on search query
+  void _filterAppointments(String query) {
+    if (query.isEmpty) {
+      // If search query is empty, reset the list to show all appointments
+      fetchAppointments();
+    } else {
+      // Filter appointments based on search query
+      final filteredAppointments = _appointments.where((appointment) {
+        final text = appointment['text']?.toString().toLowerCase() ?? '';
+        return text.contains(query.toLowerCase());
+      }).toList();
+      setState(() {
+        _appointments = filteredAppointments;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Termine'),
       ),
-      body: _appointments.isNotEmpty
-          ? GroupedListView<dynamic, String>(
-        elements: _appointments,
-        groupBy: (appointment) => appointment['appointment_date'] != null ? appointment['appointment_date'].toString() : '',// Hier nach Datum gruppieren
-        groupSeparatorBuilder: (String date) => ListTile(
-          title: Text(date),
-          tileColor: Colors.grey[300],
-        ),
-        itemBuilder: (context, appointment) => ListTile(
-          title: Text(appointment['text'] ?? 'Kein Text verfügbar'),
-          subtitle: Text(
-            'Startzeit: ${appointment['start_time']} | Endzeit: ${appointment['end_time']}',
+      body: Column(
+        children: [
+          // Add the FilterBar widget
+          FilterBar(
+            onSearchChanged: _filterAppointments,
+            onSortChanged: (option) {
+              // Implement logic to sort appointments based on selected option
+              // Handle default case or no sorting option selected
+            },
           ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AppointmentDetailPage(appointment: appointment),
+          Expanded(
+            child: _appointments.isNotEmpty
+                ? GroupedListView<dynamic, String>(
+              elements: _appointments,
+              groupBy: (appointment) => appointment['appointment_date'] != null
+                  ? appointment['appointment_date'].toString()
+                  : '',
+              groupSeparatorBuilder: (String date) => ListTile(
+                title: Text(date),
+                tileColor: Colors.grey[300],
               ),
-            );
-          },
-        ),
-      )
-          : const Center(
-        child: Text('Keine Termine vorhanden'),
+              itemBuilder: (context, appointment) => ListTile(
+                title: Text(appointment['text'] ?? 'Kein Text verfügbar'),
+                subtitle: Text(
+                  'Startzeit: ${appointment['start_time']} | Endzeit: ${appointment['end_time']}',
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AppointmentDetailPage(appointment: appointment),
+                    ),
+                  );
+                },
+              ),
+            )
+                : const Center(
+              child: Text('Keine Termine vorhanden'),
+            ),
+          ),
+        ],
       ),
     );
   }

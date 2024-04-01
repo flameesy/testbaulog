@@ -20,29 +20,51 @@ class _FilterBarState extends State<FilterBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value;
-              });
-              widget.onSearchChanged(value); // Call the callback function with the search query
-            },
-            decoration: const InputDecoration(
-              hintText: 'Suche...',
-              border: OutlineInputBorder(),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      color: Colors.grey[200], // Background color
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+                widget.onSearchChanged(value); // Call the callback function with the search query
+              },
+              decoration: InputDecoration(
+                hintText: 'Suche...',
+                filled: true,
+                fillColor: Colors.white, // Text field background color
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none, // Hide border
+                ),
+                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                suffixIcon: Icon(Icons.search),
+              ),
             ),
           ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.sort),
-          onPressed: () {
-            _showSortOptions(context);
-          },
-        ),
-      ],
+          SizedBox(width: 8.0), // Spacer
+          InkWell(
+            onTap: () {
+              _showSortOptions(context);
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Sortieren nach',
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 4.0),
+                Icon(Icons.sort),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -51,13 +73,16 @@ class _FilterBarState extends State<FilterBar> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Sortieren nach'),
+          title: Text(
+            'Sortieren nach',
+            style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          ),
           content: SingleChildScrollView(
             child: Column(
               children: [
-                _buildSortOption('Option 1', 'option1'),
-                _buildSortOption('Option 2', 'option2'),
-                _buildSortOption('Option 3', 'option3'),
+                _buildSortOption('Startzeit', 'option1'),
+                _buildSortOption('Text', 'option2'),
+                _buildSortOption('Dauer', 'option3'),
               ],
             ),
           ),
@@ -76,7 +101,7 @@ class _FilterBarState extends State<FilterBar> {
         widget.onSortChanged(option); // Call the callback function with the selected sorting option
         Navigator.pop(context);
       },
-      trailing: _selectedSortOption == option ? const Icon(Icons.check) : null,
+      trailing: _selectedSortOption == option ? Icon(Icons.check) : null,
     );
   }
 }

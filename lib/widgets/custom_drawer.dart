@@ -53,7 +53,7 @@ class CustomAppDrawer extends StatelessWidget {
             icon: Icons.email,
             title: 'Email',
             onTap: () {
-              _navigateTo(context, '/email');
+              _navigateTo(context, '/mail');
             },
           ),
           _buildMenuItem(
