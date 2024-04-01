@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:grouped_list/grouped_list.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:testbaulog/screens/appointment_detail_page.dart';
+
 import '../helpers/database_helper.dart';
 
 class AppointmentsPage extends StatefulWidget {
@@ -13,80 +15,60 @@ class AppointmentsPage extends StatefulWidget {
 }
 
 class _AppointmentsPageState extends State<AppointmentsPage> {
-  late List<Map<String, dynamic>> _appointments = [];
-  late Map<DateTime, List<dynamic>> _events;
-  late List<Map<String, dynamic>> _thisWeekAppointments = [];
+  List<Map<String, dynamic>> _appointments = []; // Initialize with an empty list
 
   @override
   void initState() {
     super.initState();
-    _fetchAppointments();
+    fetchAppointments();
   }
 
-  Future<void> _fetchAppointments() async {
-    final List<Map<String, dynamic>> appointments = await widget.database.query('APPOINTMENT');
-    setState(() {
-      _appointments = appointments;
-      _events = _groupAppointmentsByDate(appointments);
-      _thisWeekAppointments = _getThisWeekAppointments(appointments);
-    });
-  }
-
-  Map<DateTime, List<dynamic>> _groupAppointmentsByDate(List<Map<String, dynamic>> appointments) {
-    Map<DateTime, List<dynamic>> events = {};
-    for (var appointment in appointments) {
-      DateTime date = DateTime.parse(appointment['appointment_date']);
-      if (events.containsKey(date)) {
-        events[date]!.add(appointment);
-      } else {
-        events[date] = [appointment];
+  Future<void> fetchAppointments() async {
+    final DatabaseHelper dbHelper = DatabaseHelper(database: widget.database);
+    try {
+      final List<Map<String, dynamic>> appointments = await dbHelper.fetchItems('APPOINTMENT');
+      if (mounted) {
+        setState(() {
+          _appointments = appointments;
+        });
       }
+    } catch (e) {
+      print('Error fetching appointments: $e');
+      // Handle error if needed
     }
-    return events;
-  }
-
-  List<Map<String, dynamic>> _getThisWeekAppointments(List<Map<String, dynamic>> appointments) {
-    DateTime now = DateTime.now();
-    DateTime startOfWeek = DateTime(now.year, now.month, now.day - now.weekday);
-    DateTime endOfWeek = startOfWeek.add(Duration(days: 7));
-
-    return appointments.where((appointment) {
-      DateTime appointmentDate = DateTime.parse(appointment['appointment_date']);
-      return appointmentDate.isAfter(startOfWeek) && appointmentDate.isBefore(endOfWeek);
-    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calendar'),
+        title: const Text('Termine'),
       ),
       body: _appointments.isNotEmpty
-          ? SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TableCalendar(
-              calendarFormat: CalendarFormat.month,
-              headerStyle: const HeaderStyle(
-                formatButtonVisible: false,
+          ? GroupedListView<dynamic, String>(
+        elements: _appointments,
+        groupBy: (appointment) => appointment['appointment_date'] != null ? appointment['appointment_date'].toString() : '',// Hier nach Datum gruppieren
+        groupSeparatorBuilder: (String date) => ListTile(
+          title: Text(date),
+          tileColor: Colors.grey[300],
+        ),
+        itemBuilder: (context, appointment) => ListTile(
+          title: Text(appointment['text'] ?? 'Kein Text verfügbar'),
+          subtitle: Text(
+            'Startzeit: ${appointment['start_time']} | Endzeit: ${appointment['end_time']}',
+          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AppointmentDetailPage(appointment: appointment),
               ),
-              eventLoader: (day) {
-                // Return events for the specified day from the _events map
-                return _events[day] ?? [];
-              },
-              firstDay: DateTime.utc(2010, 10, 16),
-              lastDay: DateTime.utc(2030, 3, 14),
-              focusedDay: DateTime.now(),
-              // Customize calendar properties as needed
-            ),
-            // Other widgets or components can be added here
-          ],
+            );
+          },
         ),
       )
           : const Center(
-        child: Text('No appointments available'),
+        child: Text('Keine Termine vorhanden'),
       ),
     );
   }

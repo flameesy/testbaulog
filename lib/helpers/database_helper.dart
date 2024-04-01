@@ -7,123 +7,112 @@ class DatabaseHelper {
   DatabaseHelper({required this.database}) {
     // Überprüfen, ob die Tabellen bereits vorhanden sind, andernfalls erstellen
     createTablesIfNotExists();
+
   }
 
   Future<void> createTablesIfNotExists() async {
-    // Die Tabellen werden nur erstellt, wenn sie noch nicht existieren
-    await createAppointmentTable();
-    await createUserTable();
-    await createLogTable();
-    await createBuildingTable();
-    await createLevelTable();
-    await createRoomTable();
-    await createPlatformTable();
-    await createAddressTable();
+    final tables = {
+      'APPOINTMENT': '''
+    CREATE TABLE IF NOT EXISTS APPOINTMENT (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      appointment_date DATETIME NOT NULL,
+      start_time DATETIME NOT NULL,
+      end_time DATETIME NOT NULL,
+      text TEXT,
+      room_id INTEGER,
+      platform_id INTEGER,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (room_id) REFERENCES ROOM (id) ON DELETE CASCADE,
+      FOREIGN KEY (platform_id) REFERENCES PLATFORM (id) ON DELETE CASCADE,
+      building_id INTEGER,
+      level_id INTEGER,
+      UNIQUE (building_id, level_id, room_id)
+    )
+  ''',
+      'USERS': '''
+    CREATE TABLE IF NOT EXISTS USERS (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT NOT NULL UNIQUE,
+      password TEXT NOT NULL
+    )
+  ''',
+      'LOG': '''
+    CREATE TABLE IF NOT EXISTS LOG (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      action TEXT NOT NULL,
+      table_name TEXT NOT NULL,
+      record_id INTEGER,
+      old_data TEXT,
+      new_data TEXT
+    )
+  ''',
+      'BUILDING': '''
+    CREATE TABLE IF NOT EXISTS BUILDING (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT NOT NULL,
+      level_count INTEGER
+    )
+  ''',
+      'LEVEL': '''
+    CREATE TABLE IF NOT EXISTS LEVEL (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      building_id INTEGER NOT NULL,
+      FOREIGN KEY (building_id) REFERENCES BUILDING (id) ON DELETE CASCADE,
+      room_count INTEGER
+    )
+  ''',
+      'ROOM': '''
+    CREATE TABLE IF NOT EXISTS ROOM (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      level_id INTEGER NOT NULL,
+      access INTEGER NOT NULL,
+      FOREIGN KEY (level_id) REFERENCES LEVEL (id) ON DELETE CASCADE
+    )
+  ''',
+      'PLATFORM': '''
+    CREATE TABLE IF NOT EXISTS PLATFORM (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      building_id INTEGER NOT NULL,
+      FOREIGN KEY (building_id) REFERENCES BUILDING (id) ON DELETE CASCADE
+    )
+  ''',
+      'ADDRESS': '''
+    CREATE TABLE IF NOT EXISTS ADDRESS (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT,
+      first_name TEXT NOT NULL,
+      last_name TEXT NOT NULL,
+      email TEXT,
+      second_email TEXT,
+      phone_number TEXT,
+      landline TEXT,
+      position TEXT,
+      street TEXT,
+      city TEXT,
+      postal_code TEXT,
+      country TEXT
+    )
+  ''',
+    };
+
+
+    for (final tableName in tables.keys) {
+      await database.execute(tables[tableName]!);
+    }
   }
 
-  Future<void> createAppointmentTable() async {
-    await database.execute('''
-      CREATE TABLE IF NOT EXISTS APPOINTMENT (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        appointment_date DATETIME NOT NULL,
-        start_time DATETIME NOT NULL,
-        end_time DATETIME NOT NULL,
-        text TEXT,
-        room_id INTEGER,
-        platform_id INTEGER,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (room_id) REFERENCES ROOM (id) ON DELETE CASCADE,
-        FOREIGN KEY (platform_id) REFERENCES PLATFORM (id) ON DELETE CASCADE
-      )
-    ''');
-  }
-
-  Future<void> createUserTable() async {
-    await database.execute('''
-      CREATE TABLE IF NOT EXISTS USERS (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
-      )
-    ''');
-  }
-
-  Future<void> createLogTable() async {
-    await database.execute('''
-      CREATE TABLE IF NOT EXISTS LOG (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-        action TEXT NOT NULL,
-        table_name TEXT NOT NULL,
-        record_id INTEGER,
-        old_data TEXT,
-        new_data TEXT
-      )
-    ''');
-  }
-
-  Future<void> createBuildingTable() async {
-    await database.execute('''
-      CREATE TABLE IF NOT EXISTS BUILDING (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        description TEXT NOT NULL
-      )
-    ''');
-  }
-
-  Future<void> createLevelTable() async {
-    await database.execute('''
-      CREATE TABLE IF NOT EXISTS LEVEL (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        building_id INTEGER NOT NULL,
-        FOREIGN KEY (building_id) REFERENCES BUILDING (id) ON DELETE CASCADE
-      )
-    ''');
-  }
-
-  Future<void> createRoomTable() async {
-    await database.execute('''
-      CREATE TABLE IF NOT EXISTS ROOM (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        level_id INTEGER NOT NULL,
-        access INTEGER NOT NULL,
-        FOREIGN KEY (level_id) REFERENCES LEVEL (id) ON DELETE CASCADE
-      )
-    ''');
-  }
-
-  Future<void> createPlatformTable() async {
-    await database.execute('''
-      CREATE TABLE IF NOT EXISTS PLATFORM (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        building_id INTEGER NOT NULL,
-        FOREIGN KEY (building_id) REFERENCES BUILDING (id) ON DELETE CASCADE
-      )
-    ''');
-  }
-
-  Future<void> createAddressTable() async {
-    await database.execute('''
-      CREATE TABLE IF NOT EXISTS ADDRESS (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        first_name TEXT NOT NULL,
-        last_name TEXT NOT NULL,
-        email TEXT,
-        second_email TEXT,
-        phone_number TEXT,
-        landline TEXT,
-        position TEXT,
-        street TEXT,
-        city TEXT,
-        postal_code TEXT,
-        country TEXT
-      )
-    ''');
+  Future<void> insertUser(String email, String password) async {
+    final hashedPassword = await _hashPassword(password);
+    await database.insert(
+      'USERS',
+      {'email': email, 'password': hashedPassword},
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<void> insertAppointment({
@@ -158,14 +147,6 @@ class DatabaseHelper {
     await database.delete('APPOINTMENT', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<void> insertUser(String email, String password) async {
-    final hashedPassword = await _hashPassword(password);
-    await database.rawInsert('''
-      INSERT INTO USERS (email, password)
-      VALUES (?, ?)
-    ''', [email, hashedPassword]);
-  }
-
   Future<bool> authenticateUser(String email, String password) async {
     final List<Map<String, dynamic>> result = await database.query(
       'USERS',
@@ -186,12 +167,12 @@ class DatabaseHelper {
   }
 
   Future<String> _hashPassword(String password) async {
-    final hashedPassword = await BCrypt.hashpw(password, BCrypt.gensalt());
+    final hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
     return hashedPassword;
   }
 
   Future<bool> _verifyPassword(String password, String hashedPassword) async {
-    final isValidPassword = await BCrypt.checkpw(password, hashedPassword);
+    final isValidPassword = BCrypt.checkpw(password, hashedPassword);
     return isValidPassword;
   }
 
@@ -279,8 +260,7 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> addAddress(
-      String firstName,
+  Future<void> addAddress(String firstName,
       String lastName,
       String email,
       String secondEmail,
@@ -314,12 +294,7 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> deleteAddress(int id) async {
-    await database.delete('ADDRESS', where: 'id = ?', whereArgs: [id]);
-  }
-
-  Future<void> updateAddress(
-      int id,
+  Future<void> updateAddress(int id,
       String firstName,
       String lastName,
       String email,
@@ -355,9 +330,17 @@ class DatabaseHelper {
     );
   }
 
-  // Für die LOG-Tabelle und die restlichen Methoden, die du bereits implementiert hast, bleiben unverändert
-
-  Future<List<Map<String, dynamic>>> fetchRooms() async {
-    return await database.query('ROOM');
+  Future<void> deleteAddress(int id) async {
+    await database.delete('ADDRESS', where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<List<Map<String, dynamic>>> fetchItems(String tableName) async {
+    return await database.query(tableName);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchItemsWithWhere(String tableName,
+      String where, List<dynamic> whereArgs) async {
+    return await database.query(tableName, where: where, whereArgs: whereArgs);
+  }
+
 }
