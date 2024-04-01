@@ -13,6 +13,8 @@ if (dart.library.html) 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:testbaulog/screens/appointments_page.dart';
 import 'package:testbaulog/screens/email_page.dart';
 import 'package:testbaulog/screens/home_page.dart';
+import 'package:testbaulog/screens/order_form_page.dart';
+import 'package:testbaulog/screens/order_page.dart';
 import 'package:testbaulog/screens/rooms_page.dart';
 import 'package:testbaulog/screens/settings_page.dart';
 import 'package:testbaulog/screens/login_page.dart';
@@ -89,36 +91,39 @@ void main() async {
 
 
 class MyApp extends StatelessWidget {
-final Database database;
+  final Database database;
 
-const MyApp({Key? key, required this.database}) : super(key: key);
+  const MyApp({Key? key, required this.database}) : super(key: key);
 
-@override
-Widget build(BuildContext context) {
-  return MaterialApp(
-    title: 'BauLog',
-    initialRoute: '/login',
-    routes: {
-      '/': (context) => AppWrapper(
-        child: HomePage(database: database),
-      ),
-      '/login': (context) => AppWrapper(
-        child: LoginPage(database: database),
-      ),
-      '/mail': (context) => const AppWrapper(
-        child: EmailPage(),
-      ),
-      '/termine': (context) => AppWrapper(
-        child: AppointmentsPage(database: database),
-      ),
-      '/rooms': (context) => AppWrapper(
-        child: RoomsPage(database: database),
-      ),
-      '/einstellungen': (context) => AppWrapper(
-        child: SettingsPage(database: database),
-      ),
-    },
-    theme: BauLogTheme.getTheme(),
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'BauLog',
+      initialRoute: '/login',
+      routes: {
+        '/': (context) => AppWrapper(
+          child: HomePage(database: database),
+        ),
+        '/login': (context) => AppWrapper(
+          child: LoginPage(database: database),
+        ),
+        '/mail': (context) => const AppWrapper(
+          child: EmailPage(),
+        ),
+        '/termine': (context) => AppWrapper(
+          child: AppointmentsPage(database: database),
+        ),
+        '/rooms': (context) => AppWrapper(
+          child: RoomsPage(database: database),
+        ),
+        '/order': (context) => AppWrapper(
+          child: OrderPage(database: database),
+        ),
+        '/einstellungen': (context) => AppWrapper(
+          child: SettingsPage(database: database),
+        ),
+      },
+      theme: BauLogTheme.getTheme(),
     );
   }
 }

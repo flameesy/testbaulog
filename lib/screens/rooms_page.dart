@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:testbaulog/screens/room_detail_page.dart';
-import 'package:grouped_list/grouped_list.dart';
+import 'package:grouped_list/grouped_list.dart'; // Import des grouped_list-Pakets
 import '../helpers/database_helper.dart';
 import '../widgets/add_room_dialog.dart';
 import '../widgets/filter_bar.dart'; // Import der FilterBar
@@ -16,8 +16,9 @@ class RoomsPage extends StatefulWidget {
 }
 
 class _RoomsPageState extends State<RoomsPage> {
-  List<Map<String, dynamic>> _allRooms = []; // Alle Räume aus der Datenbank
-  List<Map<String, dynamic>> _displayedRooms = []; // Angezeigte Räume nach Filterung
+  List<Map<String, dynamic>> _rooms = []; // Initialize with an empty list
+  String _searchQuery = '';
+  String _selectedSortOption = '';
 
   @override
   void initState() {
@@ -28,12 +29,12 @@ class _RoomsPageState extends State<RoomsPage> {
   Future<void> fetchRooms() async {
     final DatabaseHelper dbHelper = DatabaseHelper(database: widget.database);
     try {
-      final List<Map<String, dynamic>> rooms = await dbHelper.fetchItems('ROOM');
+      final List<Map<String, dynamic>> rooms =
+      await dbHelper.fetchItems('ROOM');
 
       if (mounted) {
         setState(() {
-          _allRooms = rooms;
-          _displayedRooms = rooms; // Zu Beginn werden alle Räume angezeigt
+          _rooms = rooms;
         });
       }
     } catch (e) {
@@ -42,13 +43,41 @@ class _RoomsPageState extends State<RoomsPage> {
     }
   }
 
+  Color _getBackgroundColor(int access) {
+    switch (access) {
+      case 0:
+        return Colors.white;
+      case 1:
+        return Colors.grey[200]!;
+      case 2:
+        return Colors.grey[400]!;
+      case 3:
+        return Colors.grey[600]!;
+      default:
+        return Colors.white;
+    }
+  }
+
+  Color _getTileColor(int index) {
+    List<Color> colors = [
+      Colors.red[100]!,
+      Colors.blue[100]!,
+      Colors.orange[100]!,
+    ];
+    return colors[index % 3];
+  }
+
   void _filterRooms(String query) {
     setState(() {
-      _displayedRooms = _allRooms.where((room) {
-        final name = room['name'].toString().toLowerCase();
-        return name.contains(query.toLowerCase());
-      }).toList();
+      _searchQuery = query;
     });
+  }
+
+  void _sortRooms(String option) {
+    setState(() {
+      _selectedSortOption = option;
+    });
+    // Implement logic to sort rooms based on selected option
   }
 
   @override
@@ -59,13 +88,14 @@ class _RoomsPageState extends State<RoomsPage> {
       ),
       body: Column(
         children: [
-          FilterBar( // Verwenden der FilterBar zur Suche
-            onSearchChanged: _filterRooms, onSortChanged: (String ) {  },
+          FilterBar(
+            onSearchChanged: _filterRooms,
+            onSortChanged: _sortRooms,
           ),
           Expanded(
-            child: _displayedRooms.isNotEmpty
+            child: _rooms.isNotEmpty
                 ? GroupedListView<dynamic, String>(
-              elements: _displayedRooms,
+              elements: _rooms,
               groupBy: (room) => room['level_id'].toString(),
               groupSeparatorBuilder: (String levelId) => ListTile(
                 title: Text('Level $levelId'),
@@ -93,7 +123,10 @@ class _RoomsPageState extends State<RoomsPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => RoomDetailPage(room: room),
+                            builder: (context) => RoomDetailPage(
+                              room: room,
+                              database: widget.database,
+                            ),
                           ),
                         );
                       },
@@ -103,7 +136,7 @@ class _RoomsPageState extends State<RoomsPage> {
               ),
             )
                 : const Center(
-              child: Text('Keine passenden Räume gefunden'),
+              child: Text('Keine Räume vorhanden'),
             ),
           ),
         ],
@@ -120,14 +153,5 @@ class _RoomsPageState extends State<RoomsPage> {
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  Color _getTileColor(int index) {
-    List<Color> colors = [
-      Colors.red[100]!,
-      Colors.blue[100]!,
-      Colors.orange[100]!,
-    ];
-    return colors[index % 3];
   }
 }

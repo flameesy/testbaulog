@@ -15,16 +15,22 @@ class DatabaseHelper {
       'APPOINTMENT': '''
     CREATE TABLE IF NOT EXISTS APPOINTMENT (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      appointment_date DATETIME NOT NULL,
-      start_time DATETIME NOT NULL,
-      end_time DATETIME NOT NULL,
-      text TEXT,
-      room_id INTEGER,
-      platform_id INTEGER,
+      appointment_date DATE NOT NULL,
+      start_time TIME NOT NULL,
+      end_time TIME NOT NULL,
+      text TEXT NOT NULL,
+      description TEXT,
+      location TEXT,
+      participant_ids TEXT,
+      reminder_time DATETIME,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (room_id) REFERENCES ROOM (id) ON DELETE CASCADE,
-      FOREIGN KEY (platform_id) REFERENCES PLATFORM (id) ON DELETE CASCADE,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      platform_id INTEGER,
+      room_id INTEGER,
       building_id INTEGER,
+      FOREIGN KEY (platform_id) REFERENCES PLATFORM(platform_id),
+      FOREIGN KEY (room_id) REFERENCES ROOM(room_id),
+      FOREIGN KEY (building_id) REFERENCES BUILDING(building_id)
       level_id INTEGER,
       UNIQUE (building_id, level_id, room_id)
     )

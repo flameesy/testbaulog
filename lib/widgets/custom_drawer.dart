@@ -71,6 +71,13 @@ class CustomAppDrawer extends StatelessWidget {
             onTap: () {
               _navigateTo(context, '/karten');
             },
+          ),_buildMenuItem(
+            context,
+            icon: Icons.map,
+            title: 'Bestellung',
+            onTap: () {
+              _navigateTo(context, '/order');
+            },
           ),
           _buildMenuItem(
             context,
