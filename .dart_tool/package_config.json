@@ -218,6 +218,12 @@
       "languageVersion": "3.1"
     },
     {
+      "name": "flutter_mailer",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_mailer-2.1.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///C:/Users/Simon/dev/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -656,7 +662,7 @@
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2024-04-01T12:59:34.974293Z",
+  "generated": "2024-04-01T14:21:13.841292Z",
   "generator": "pub",
   "generatorVersion": "3.3.3"
 }

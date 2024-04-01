@@ -37,15 +37,15 @@ class HomePage extends StatelessWidget {
               Expanded(
                 child: _buildTile(
                   context: context,
-                  title: 'Placeholder 3',
-                  valueFuture: _getPlaceholderValue(),
+                  title: 'Anzahl der Räume',
+                  valueFuture: _getRoomCount(),
                 ),
               ),
               Expanded(
                 child: _buildTile(
                   context: context,
-                  title: 'Placeholder 4',
-                  valueFuture: _getPlaceholderValue(),
+                  title: 'Anzahl der Gebäude',
+                  valueFuture: _getBuildingCount(),
                 ),
               ),
             ],
@@ -66,6 +66,20 @@ class HomePage extends StatelessWidget {
   Future<int> _getAppointmentCount() async {
     final List<Map<String, dynamic>> result =
     await database.rawQuery('SELECT COUNT(*) as count FROM APPOINTMENT;');
+    final int userCount = Sqflite.firstIntValue(result) ?? 0;
+    return userCount;
+  }
+
+  Future<int> _getRoomCount() async {
+    final List<Map<String, dynamic>> result =
+    await database.rawQuery('SELECT COUNT(*) as count FROM ROOM;');
+    final int userCount = Sqflite.firstIntValue(result) ?? 0;
+    return userCount;
+  }
+
+  Future<int> _getBuildingCount() async {
+    final List<Map<String, dynamic>> result =
+    await database.rawQuery('SELECT COUNT(*) as count FROM BUILDING;');
     final int userCount = Sqflite.firstIntValue(result) ?? 0;
     return userCount;
   }

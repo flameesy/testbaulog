@@ -80,6 +80,8 @@ void main() async {
     platformId: 2,
   );
 
+  databaseHelper.insertUser('test@example.com', 'password123');
+
   runApp(MyApp(database: database));
 }
 

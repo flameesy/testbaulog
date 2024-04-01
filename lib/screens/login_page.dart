@@ -1,5 +1,3 @@
-// login_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import '../helpers/database_helper.dart';
@@ -8,7 +6,7 @@ import '../screens/add_appointment_page.dart'; // Import AddAppointmentPage
 class LoginPage extends StatefulWidget {
   final Database database;
 
-  const LoginPage({Key? key, required this.database}) : super(key: key);
+  const LoginPage({super.key, required this.database});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -50,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
                 final bool isAuthenticated = await dbHelper.authenticateUser(email, password);
                 if (isAuthenticated) {
                   // Navigate to the main screen upon successful authentication
-                  Navigator.pushReplacementNamed(context, '/termine');
+                  Navigator.pushReplacementNamed(context, '/');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -65,5 +63,17 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Deaktiviere die Zurücknavigation
+    ModalRoute.of(context)?.removeScopedWillPopCallback(_onWillPop);
+    ModalRoute.of(context)?.addScopedWillPopCallback(_onWillPop);
+  }
+
+  Future<bool> _onWillPop() async {
+    return false; // Blockiere das Zurücknavigieren
   }
 }

@@ -80,6 +80,14 @@ class CustomAppDrawer extends StatelessWidget {
               _navigateTo(context, '/einstellungen');
             },
           ),
+          _buildMenuItem(
+            context,
+            icon: Icons.map,
+            title: 'Logout',
+            onTap: () {
+              _navigateTo(context, '/login');
+            },
+          ),
           // Add more menu items as needed
         ],
       ),
