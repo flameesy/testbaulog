@@ -9,7 +9,7 @@ import '../widgets/filter_bar.dart'; // Import der FilterBar
 class RoomsPage extends StatefulWidget {
   final Database database;
 
-  const RoomsPage({Key? key, required this.database}) : super(key: key);
+  const RoomsPage({super.key, required this.database});
 
   @override
   _RoomsPageState createState() => _RoomsPageState();

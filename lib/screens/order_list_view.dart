@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 class OrderListView extends StatefulWidget {
   final Database database;
 
-  const OrderListView({Key? key, required this.database}) : super(key: key);
+  const OrderListView({super.key, required this.database});
 
   @override
   _OrderListViewState createState() => _OrderListViewState();
@@ -45,7 +45,7 @@ class _OrderListViewState extends State<OrderListView> {
         );
       },
     )
-        : Center(
+        : const Center(
       child: Text('Keine Bestellungen vorhanden'),
     );
   }

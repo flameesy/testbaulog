@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import '../helpers/database_helper.dart';
-import '../screens/add_appointment_page.dart'; // Import AddAppointmentPage
+// Import AddAppointmentPage
 
 class LoginPage extends StatefulWidget {
   final Database database;

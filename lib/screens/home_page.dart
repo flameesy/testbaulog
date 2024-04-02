@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:testbaulog/widgets/custom_app_bar.dart';
 import 'package:testbaulog/widgets/custom_drawer.dart';
-import '../helpers/database_helper.dart';
 
 class HomePage extends StatelessWidget {
   final Database database;
 
-  const HomePage({Key? key, required this.database}) : super(key: key);
+  const HomePage({super.key, required this.database});
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +104,7 @@ class HomePage extends StatelessWidget {
           children: [
             Text(
               title,
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             FutureBuilder(
@@ -118,7 +117,7 @@ class HomePage extends StatelessWidget {
                 } else {
                   return Text(
                     '${snapshot.data}',
-                    style: Theme.of(context).textTheme.subtitle1,
+                    style: Theme.of(context).textTheme.titleMedium,
                   );
                 }
               },

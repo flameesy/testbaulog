@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AddAppointmentDialog extends StatefulWidget {
-  const AddAppointmentDialog({Key? key}) : super(key: key);
+  const AddAppointmentDialog({super.key});
 
   @override
   _AddAppointmentDialogState createState() => _AddAppointmentDialogState();
@@ -73,9 +73,9 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
                   });
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Betreff/Titel',
                 ),
                 onChanged: (value) {
@@ -84,9 +84,9 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
                   });
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Beschreibung',
                 ),
                 maxLines: 3, // Allow multiline input for description
@@ -96,16 +96,16 @@ class _AddAppointmentDialogState extends State<AddAppointmentDialog> {
                   });
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Dauer (Minuten)',
                 ),
                 keyboardType: TextInputType.number,
                 maxLength: 3, // Limit input to 3 digits
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Allow only digit input
                 textAlign: TextAlign.center, // Center align text
-                style: TextStyle(fontSize: 16), // Adjust font size
+                style: const TextStyle(fontSize: 16), // Adjust font size
                 onChanged: (value) {
                   setState(() {
                     _duration = int.tryParse(value) ?? 0;

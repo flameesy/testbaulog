@@ -23,14 +23,14 @@ class BauLogTheme {
       hintColor: secondaryColor,
       appBarTheme: AppBarTheme(
         backgroundColor: primaryColor, toolbarTextStyle: TextTheme(
-          headline6: headlineTextStyle.copyWith(color: Colors.white),
-        ).bodyText2, titleTextStyle: TextTheme(
-          headline6: headlineTextStyle.copyWith(color: Colors.white),
-        ).headline6,
+          titleLarge: headlineTextStyle.copyWith(color: Colors.white),
+        ).bodyMedium, titleTextStyle: TextTheme(
+          titleLarge: headlineTextStyle.copyWith(color: Colors.white),
+        ).titleLarge,
       ),
       textTheme: const TextTheme(
-        headline6: headlineTextStyle,
-        bodyText2: bodyTextStyle,
+        titleLarge: headlineTextStyle,
+        bodyMedium: bodyTextStyle,
       ),
       // Add more theme properties as needed
     );

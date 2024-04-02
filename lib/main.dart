@@ -1,10 +1,7 @@
-import 'dart:convert';
 
-import 'package:drift/backends.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path/path.dart' as path;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -13,7 +10,6 @@ if (dart.library.html) 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:testbaulog/screens/appointments_page.dart';
 import 'package:testbaulog/screens/email_page.dart';
 import 'package:testbaulog/screens/home_page.dart';
-import 'package:testbaulog/screens/order_form_page.dart';
 import 'package:testbaulog/screens/order_page.dart';
 import 'package:testbaulog/screens/rooms_page.dart';
 import 'package:testbaulog/screens/settings_page.dart';
@@ -93,7 +89,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   final Database database;
 
-  const MyApp({Key? key, required this.database}) : super(key: key);
+  const MyApp({super.key, required this.database});
 
   @override
   Widget build(BuildContext context) {
@@ -131,8 +127,7 @@ class MyApp extends StatelessWidget {
 class AppWrapper extends StatelessWidget {
   final Widget child;
 
-  const AppWrapper({Key? key, required this.child})
-      : super(key: key);
+  const AppWrapper({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {

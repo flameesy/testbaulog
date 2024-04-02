@@ -6,7 +6,6 @@ class DatabaseHelper {
 
   DatabaseHelper({required this.database}) {
     // Überprüfen, ob die Tabellen bereits vorhanden sind, andernfalls erstellen
-    createTablesIfNotExists();
 
   }
 
@@ -104,6 +103,18 @@ class DatabaseHelper {
       country TEXT
     )
   ''',
+      'EMAIL': '''
+    CREATE TABLE IF NOT EXISTS EMAIL (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      sender_id INTEGER,
+      receiver_id INTEGER,
+      subject TEXT,
+      body TEXT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (sender_id) REFERENCES ADDRESS(id),
+      FOREIGN KEY (receiver_id) REFERENCES ADDRESS(id)
+    )
+  '''
     };
 
 
@@ -144,9 +155,14 @@ class DatabaseHelper {
   }
 
   Future<List<Map<String, dynamic>>> fetchAppointments() async {
-    final List<Map<String, dynamic>> appointments =
-    await database.query('APPOINTMENT');
-    return appointments;
+    try {
+      final List<Map<String, dynamic>> appointments = await database.query('APPOINTMENT');
+      print('Appointments fetched successfully: $appointments');
+      return appointments;
+    } catch (e) {
+      print('Error fetching appointments: $e');
+      return [];
+    }
   }
 
   Future<void> deleteAppointment(int id) async {

@@ -5,10 +5,10 @@ class FilterBar extends StatefulWidget {
   final Function(String) onSortChanged;
 
   const FilterBar({
-    Key? key,
+    super.key,
     required this.onSearchChanged,
     required this.onSortChanged,
-  }) : super(key: key);
+  });
 
   @override
   _FilterBarState createState() => _FilterBarState();
@@ -21,7 +21,7 @@ class _FilterBarState extends State<FilterBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       color: Colors.grey[200], // Background color
       child: Row(
         children: [
@@ -41,17 +41,17 @@ class _FilterBarState extends State<FilterBar> {
                   borderRadius: BorderRadius.circular(8.0),
                   borderSide: BorderSide.none, // Hide border
                 ),
-                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                suffixIcon: Icon(Icons.search),
+                contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                suffixIcon: const Icon(Icons.search),
               ),
             ),
           ),
-          SizedBox(width: 8.0), // Spacer
+          const SizedBox(width: 8.0), // Spacer
           InkWell(
             onTap: () {
               _showSortOptions(context);
             },
-            child: Row(
+            child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
@@ -73,7 +73,7 @@ class _FilterBarState extends State<FilterBar> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
+          title: const Text(
             'Sortieren nach',
             style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
           ),
@@ -101,7 +101,7 @@ class _FilterBarState extends State<FilterBar> {
         widget.onSortChanged(option); // Call the callback function with the selected sorting option
         Navigator.pop(context);
       },
-      trailing: _selectedSortOption == option ? Icon(Icons.check) : null,
+      trailing: _selectedSortOption == option ? const Icon(Icons.check) : null,
     );
   }
 }

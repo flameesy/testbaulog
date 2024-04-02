@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../helpers/database_helper.dart';
@@ -7,7 +6,7 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_drawer.dart';
 
 class AddAppointmentPage extends StatefulWidget {
-  const AddAppointmentPage({Key? key, required this.database}) : super(key: key);
+  const AddAppointmentPage({super.key, required this.database});
 
   final Database database;
 

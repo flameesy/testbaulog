@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomAppDrawer extends StatelessWidget {
-  const CustomAppDrawer({Key? key}) : super(key: key);
+  const CustomAppDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {

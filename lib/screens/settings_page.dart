@@ -26,7 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             Text(
               'Theme Color:',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             ColorPicker(
               currentColor: _themeColor,
@@ -39,7 +39,7 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 20.0),
             Text(
               'Font Size:',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Slider(
               value: _fontSize,
@@ -54,7 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 20.0),
             Text(
               'Zoom Level:',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Slider(
               value: _zoomLevel,
@@ -102,10 +102,10 @@ class ColorPicker extends StatelessWidget {
   final ValueChanged<Color> onColorChanged;
 
   const ColorPicker({
-    Key? key,
+    super.key,
     required this.currentColor,
     required this.onColorChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

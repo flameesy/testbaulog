@@ -84,7 +84,7 @@ Future<void> _downloadDatabase(String url) async {
 class MyApp extends StatelessWidget {
   final Database database;
 
-  const MyApp({Key? key, required this.database}) : super(key: key);
+  const MyApp({super.key, required this.database});
 
   @override
   Widget build(BuildContext context) {
