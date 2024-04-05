@@ -36,8 +36,8 @@ class BauLogTheme {
         ),
       ),
       textTheme: const TextTheme(
-        headline6: headlineTextStyle, // Change headline6 to headlineTextStyle
-        bodyText2: bodyTextStyle, // Change bodyText2 to bodyTextStyle
+        titleLarge: headlineTextStyle, // Change headline6 to headlineTextStyle
+        bodyMedium: bodyTextStyle, // Change bodyText2 to bodyTextStyle
       ),
       // Add more theme properties as needed
     ).copyWith(

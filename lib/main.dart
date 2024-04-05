@@ -25,9 +25,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final database = await initializeDatabase();
   //createAppointmentTable(database);
-  printAppointments(database);
+  //printAppointments(database);
   createLevelEntry('1', 1, database);
   createLevelEntry('2', 1, database);
+  createBuilding('Westbank 1', 'Westlicher Teil Bank 1', database);
+  createBuilding('Ostbank 1','Westlicher Teil Bank 1', database);
   runApp(MyApp(database: database));
 }
 
@@ -35,6 +37,14 @@ Future<void> createLevelEntry(String name, int buildingId,database) async {
   final DatabaseHelper dbHelper = DatabaseHelper(database: database);
   try {
     await dbHelper.insertLevel(name,buildingId);
+  } catch (e) {
+    print('Error creating Level Entry: $e');
+  }
+}
+Future<void> createBuilding(String name, description,database) async {
+  final DatabaseHelper dbHelper = DatabaseHelper(database: database);
+  try {
+    await dbHelper.addBuilding(name,'description');
   } catch (e) {
     print('Error creating Level Entry: $e');
   }

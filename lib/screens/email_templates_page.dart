@@ -8,7 +8,7 @@ import 'email_template_detail_page.dart';
 class EmailTemplatesPage extends StatefulWidget {
   final Database database;
 
-  const EmailTemplatesPage({Key? key, required this.database}) : super(key: key);
+  const EmailTemplatesPage({super.key, required this.database});
 
   @override
   _EmailTemplatesPageState createState() => _EmailTemplatesPageState();

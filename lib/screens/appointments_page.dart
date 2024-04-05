@@ -84,8 +84,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('Daten an SelectedDayAppointmentsList übergeben:');
-    print(_getEventsForDay(_selectedDay));
     return Scaffold(
       appBar: AppBar(
         title: const Text('Termine'),

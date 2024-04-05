@@ -5,7 +5,7 @@ class EditLevelPage extends StatefulWidget {
   final Map<String, dynamic> levelData;
   final DatabaseHelper databaseHelper;
 
-  const EditLevelPage({Key? key, required this.levelData, required this.databaseHelper}) : super(key: key);
+  const EditLevelPage({super.key, required this.levelData, required this.databaseHelper});
 
   @override
   _EditLevelPageState createState() => _EditLevelPageState();
@@ -30,7 +30,7 @@ class _EditLevelPageState extends State<EditLevelPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Level bearbeiten'),
+        title: const Text('Level bearbeiten'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -39,27 +39,27 @@ class _EditLevelPageState extends State<EditLevelPage> {
           children: [
             TextFormField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
+              decoration: const InputDecoration(labelText: 'Name'),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             TextFormField(
               controller: _roomCountController,
-              decoration: InputDecoration(labelText: 'Anzahl der Räume'),
+              decoration: const InputDecoration(labelText: 'Anzahl der Räume'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             TextFormField(
               controller: _syncStatusController,
-              decoration: InputDecoration(labelText: 'Synchronisierungsstatus'),
+              decoration: const InputDecoration(labelText: 'Synchronisierungsstatus'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             TextFormField(
               controller: _buildingIdController,
-              decoration: InputDecoration(labelText: 'Gebäude ID'),
+              decoration: const InputDecoration(labelText: 'Gebäude ID'),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () async {
                 // Speichern der bearbeiteten Level-Daten
@@ -90,7 +90,7 @@ class _EditLevelPageState extends State<EditLevelPage> {
 
                 Navigator.pop(context, true); // Zurück zur vorherigen Seite mit Aktualisierungsmarkierung
               },
-              child: Text('Speichern'),
+              child: const Text('Speichern'),
             ),
 
           ],

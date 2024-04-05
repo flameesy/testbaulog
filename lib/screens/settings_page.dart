@@ -2,14 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
-import '../helpers/database_helper.dart';
 import '../helpers/export_csv.dart';
-import 'package:file_picker/file_picker.dart';
 
 class SettingsPage extends StatefulWidget {
   final Database database;
 
-  const SettingsPage({Key? key, required this.database}) : super(key: key);
+  const SettingsPage({super.key, required this.database});
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
@@ -34,7 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             Text(
               'Theme Color:',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             ColorPicker(
               currentColor: _themeColor,
@@ -47,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 20.0),
             Text(
               'Font Size:',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Slider(
               value: _fontSize,
@@ -62,7 +60,7 @@ class _SettingsPageState extends State<SettingsPage> {
             const SizedBox(height: 20.0),
             Text(
               'Zoom Level:',
-              style: Theme.of(context).textTheme.headline6,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Slider(
               value: _zoomLevel,
@@ -131,15 +129,15 @@ class _SettingsPageState extends State<SettingsPage> {
 
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Export successful'),
+          const SnackBar(
+            content: Text('Export successful'),
           ),
         );
       } else {
         // Show error message if export path is empty
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Export path is empty'),
+          const SnackBar(
+            content: Text('Export path is empty'),
           ),
         );
       }
@@ -167,10 +165,10 @@ class ColorPicker extends StatelessWidget {
   final ValueChanged<Color> onColorChanged;
 
   const ColorPicker({
-    Key? key,
+    super.key,
     required this.currentColor,
     required this.onColorChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

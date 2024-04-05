@@ -5,7 +5,7 @@ import '../helpers/database_helper.dart';
 class LoginPage extends StatefulWidget {
   final Database database;
 
-  const LoginPage({Key? key, required this.database}) : super(key: key);
+  const LoginPage({super.key, required this.database});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -35,18 +35,18 @@ class _LoginPageState extends State<LoginPage> {
                   width: 100,
                 ),
                 const SizedBox(height: 10),
-                Text(
+                const Text(
                   'BauLog - Alpha Version',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Roboto', // Specify your desired font family here
+                    fontFamily: 'Noto', // Specify your desired font family here
                   ),
                 ),
                 const SizedBox(height: 30),
                 TextField(
                   controller: _emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
                   ),
@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                   controller: _passwordController,
                   obscureText: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),
                   ),

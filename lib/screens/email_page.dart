@@ -6,7 +6,7 @@ import '../helpers/database_helper.dart';
 class EmailPage extends StatefulWidget {
   final Database database;
 
-  const EmailPage({Key? key, required this.database}) : super(key: key);
+  const EmailPage({super.key, required this.database});
 
   @override
   _EmailPageState createState() => _EmailPageState();
@@ -88,12 +88,12 @@ class _EmailPageState extends State<EmailPage> {
         );
 
         // Entfernen von '+' und Ersetzen durch '%20'
-        final String _emailUriString = emailLaunchUri
+        final String emailUriString = emailLaunchUri
             .toString()
             .replaceAll('+', '%20');
 
         // Öffnen der Gmail-App mit der korrigierten URI
-        await launchUrl(Uri.parse(_emailUriString));
+        await launchUrl(Uri.parse(emailUriString));
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Email sent and saved!')),

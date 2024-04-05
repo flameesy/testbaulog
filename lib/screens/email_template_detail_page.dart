@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
 import '../helpers/database_helper.dart';
 
 class EmailTemplateDetailPage extends StatefulWidget {
   final DatabaseHelper databaseHelper;
   final Map<String, dynamic>? templateData; // Template-Daten für den Bearbeitungsmodus
 
-  const EmailTemplateDetailPage({Key? key, required this.databaseHelper, this.templateData}) : super(key: key);
+  const EmailTemplateDetailPage({super.key, required this.databaseHelper, this.templateData});
 
   @override
   _EmailTemplateDetailPageState createState() => _EmailTemplateDetailPageState();
@@ -35,29 +34,29 @@ class _EmailTemplateDetailPageState extends State<EmailTemplateDetailPage> {
         title: Text(widget.templateData != null ? 'Vorlage bearbeiten' : 'Vorlage erstellen'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextFormField(
               controller: _nameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Name',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             TextFormField(
               controller: _subjectController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Betreff',
                 border: OutlineInputBorder(),
               ),
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             TextField(
               controller: _bodyController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Text',
                 border: OutlineInputBorder(),
               ),
@@ -65,7 +64,7 @@ class _EmailTemplateDetailPageState extends State<EmailTemplateDetailPage> {
               keyboardType: TextInputType.multiline,
               textAlignVertical: TextAlignVertical.top,
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 // Wenn Template-Daten vorhanden sind, führe ein Update durch, sonst füge ein neues Template ein
@@ -135,14 +134,14 @@ class _EmailTemplateDetailPageState extends State<EmailTemplateDetailPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Fehler'),
+          title: const Text('Fehler'),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );

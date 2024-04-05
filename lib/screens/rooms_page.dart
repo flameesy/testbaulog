@@ -18,6 +18,7 @@ class RoomsPage extends StatefulWidget {
 
 class _RoomsPageState extends State<RoomsPage> {
   late List<Map<String, dynamic>> _rooms;
+  late List<Map<String, dynamic>> _levels; // New variable to hold levels
   String _searchQuery = '';
   String _selectedSortOption = '';
 
@@ -25,7 +26,9 @@ class _RoomsPageState extends State<RoomsPage> {
   void initState() {
     super.initState();
     _rooms = [];
+    _levels = [];
     fetchRooms();
+    fetchLevels(); // Fetch levels on initialization
   }
 
   Future<void> fetchRooms() async {
@@ -40,6 +43,22 @@ class _RoomsPageState extends State<RoomsPage> {
       }
     } catch (e) {
       print('Error fetching rooms: $e');
+      // Handle error if needed
+    }
+  }
+
+  Future<void> fetchLevels() async {
+    final DatabaseHelper dbHelper = DatabaseHelper(database: widget.database);
+    try {
+      final List<Map<String, dynamic>> levels = await dbHelper.fetchItems('LEVEL');
+
+      if (mounted) {
+        setState(() {
+          _levels = levels;
+        });
+      }
+    } catch (e) {
+      print('Error fetching levels: $e');
       // Handle error if needed
     }
   }
@@ -105,10 +124,14 @@ class _RoomsPageState extends State<RoomsPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditLevelPage(levelData: levelData, databaseHelper: DatabaseHelper(database: widget.database),
+        builder: (context) => EditLevelPage(levelData: levelData, databaseHelper: DatabaseHelper(database: widget.database)),
       ),
-    ));
+    ).then((_) {
+      // This function will be called after returning from RoomDetailPage
+      fetchRooms(); // Update room list
+    });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,18 +155,18 @@ class _RoomsPageState extends State<RoomsPage> {
                 if (levelId != null && buildingId != null) {
                   final levelIdString = levelId.toString();
                   final buildingIdString = buildingId.toString();
-                  return '$levelIdString' + '_' + '$buildingIdString';
+                  return '${levelIdString}_$buildingIdString';
                 } else if (levelId != null && buildingId == null) {
                   final levelIdString = levelId.toString();
-                  return '$levelIdString';
+                  return levelIdString;
                 } else {
                   return '';
                 }
               },
               groupSeparatorBuilder: (String groupByValue) {
-                final levelId = int.parse(groupByValue);
-                final levelData = _rooms.firstWhere(
-                      (room) => room['level_id'] == levelId,
+                final levelId = int.tryParse(groupByValue) ?? 0;
+                final levelData = _levels.firstWhere(
+                      (level) => level['id'] == levelId,
                   orElse: () => {},
                 );
 
@@ -156,7 +179,7 @@ class _RoomsPageState extends State<RoomsPage> {
                     },
                   );
                 } else {
-                  return SizedBox(); // Return an empty widget if no matching level data found
+                  return const SizedBox(); // Return an empty widget if no matching level data found
                 }
               },
               itemBuilder: (context, room) => Padding(

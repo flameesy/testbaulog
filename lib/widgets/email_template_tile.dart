@@ -4,7 +4,7 @@ class EmailTemplateTile extends StatelessWidget {
   final Map<String, dynamic> template;
   final VoidCallback onTap;
 
-  const EmailTemplateTile({Key? key, required this.template, required this.onTap}) : super(key: key);
+  const EmailTemplateTile({super.key, required this.template, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
