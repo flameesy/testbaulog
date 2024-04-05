@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite_common/sqlite_api.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart' show CalendarCarousel;
 import '../helpers/database_helper.dart';
 import '../widgets/filter_bar.dart';
-import 'add_appointment_dialog.dart';
+import '../widgets/selected_day_appointments_list.dart';
 import 'appointment_detail_page.dart';
 
 class AppointmentsPage extends StatefulWidget {
@@ -16,36 +16,48 @@ class AppointmentsPage extends StatefulWidget {
 }
 
 class _AppointmentsPageState extends State<AppointmentsPage> {
-  late List<Map<String, dynamic>> _appointments;
-  late Map<DateTime, List<Map<String, dynamic>>> _appointmentsByDate = {};
-  late CalendarFormat _calendarFormat = CalendarFormat.month;
-  late DateTime _selectedDay = DateTime.now();
-  late DateTime _focusedDay = DateTime.now();
-  late TextEditingController _searchController;
+  List<Map<String, dynamic>> _appointments = [];
+  Map<DateTime, List<dynamic>> _appointmentsByDate = {};
+  DateTime _selectedDay = DateTime.now();
+  final TextEditingController _searchController = TextEditingController();
+  late DatabaseHelper _databaseHelper;
 
   @override
   void initState() {
     super.initState();
-    _appointments = [];
-    _appointmentsByDate = {};
-    _calendarFormat = CalendarFormat.month;
-    _selectedDay = DateTime.now();
-    _focusedDay = _selectedDay;
-    _searchController = TextEditingController();
-    fetchAppointments();
+    _databaseHelper = DatabaseHelper(database: widget.database);
+    _initDatabaseHelper();
+  }
+
+  Future<void> _initDatabaseHelper() async {
+    await fetchAppointments();
   }
 
   Future<void> fetchAppointments() async {
-    final DatabaseHelper dbHelper = DatabaseHelper(database: widget.database);
     try {
-      final List<Map<String, dynamic>> appointments =
-      await dbHelper.fetchItems('APPOINTMENT');
-      final List<Map<String, dynamic>> formattedAppointments = appointments.map((appointment) {
-        final String dateString = appointment['appointment_date'];
-        final DateTime date = DateTime.parse(dateString);
-        appointment['appointment_date'] = date;
-        return appointment;
-      }).toList();
+      final List<Map<String, dynamic>> appointments = await _databaseHelper.fetchAppointments();
+      final List<Map<String, dynamic>> formattedAppointments = [];
+      for (var appointment in appointments) {
+        final DateTime appointmentDate = appointment['appointment_date'] != null
+            ? DateTime.parse(appointment['appointment_date'])
+            : DateTime.now();
+        final String startTime = appointment['start_time'] ?? '';
+        final String endTime = appointment['end_time'] ?? '';
+        final String text = appointment['text'] ?? '';
+        final String description = appointment['description'] ?? '';
+        final int id = appointment['id'] ?? 0; // Feld 'id' hinzugefügt
+        final int roomId = appointment['room_id'] ?? 0; // Feld 'room_id' hinzugefügt
+        final formattedAppointment = {
+          'id': id,
+          'room_id': roomId,
+          'appointment_date': appointmentDate,
+          'start_time': startTime,
+          'end_time': endTime,
+          'text': text,
+          'description': description,
+        };
+        formattedAppointments.add(formattedAppointment);
+      }
       setState(() {
         _appointments = formattedAppointments;
         _appointmentsByDate = _groupAppointmentsByDate(formattedAppointments);
@@ -57,25 +69,23 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   }
 
 
-  Map<DateTime, List<Map<String, dynamic>>> _groupAppointmentsByDate(
+  Map<DateTime, List<dynamic>> _groupAppointmentsByDate(
       List<Map<String, dynamic>> appointments) {
-    Map<DateTime, List<Map<String, dynamic>>> appointmentsByDate = {};
+    Map<DateTime, List<dynamic>> appointmentsByDate = {};
     for (var appointment in appointments) {
       DateTime date = appointment['appointment_date'];
-      print('Appointment Date: $date');
       if (!appointmentsByDate.containsKey(date)) {
         appointmentsByDate[date] = [];
       }
       appointmentsByDate[date]!.add(appointment);
     }
-    print('Appointments by Date: $appointmentsByDate');
     return appointmentsByDate;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
+    print('Daten an SelectedDayAppointmentsList übergeben:');
+    print(_getEventsForDay(_selectedDay));
     return Scaffold(
       appBar: AppBar(
         title: const Text('Termine'),
@@ -83,31 +93,67 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       body: Column(
         children: [
           FilterBar(
-            onSearchChanged: _filterAppointments, onSortChanged: (String ) {  },
+            onSearchChanged: _filterAppointments,
+            onSortChanged: (String) {},
           ),
-          TableCalendar(
-            firstDay: DateTime.utc(2021, 1, 1),
-            lastDay: DateTime.utc(2030, 12, 31),
-            focusedDay: _focusedDay,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            calendarFormat: _calendarFormat,
-            onFormatChanged: (format) {
+          CalendarCarousel(
+            onDayPressed: (DateTime date, List<dynamic> events) {
               setState(() {
-                _calendarFormat = format;
+                _selectedDay = date;
               });
             },
-            onPageChanged: (focusedDay) {
-              setState(() {
-                _focusedDay = focusedDay;
-              });
+            weekendTextStyle: TextStyle(color: Colors.red[300]),
+            thisMonthDayBorderColor: Colors.grey,
+            weekFormat: false,
+            height: 420.0,
+            selectedDateTime: _selectedDay,
+            daysHaveCircularBorder: true,
+            customDayBuilder: (
+                bool isSelectable,
+                int index,
+                bool isSelectedDay,
+                bool isToday,
+                bool isPrevMonthDay,
+                TextStyle textStyle,
+                bool isNextMonthDay,
+                bool isThisMonthDay,
+                DateTime day,
+                ) {
+              bool hasAppointments = _appointmentsByDate.containsKey(day);
+              return Container(
+                decoration: BoxDecoration(
+                  color: null,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: hasAppointments ? Colors.transparent : Colors.transparent),
+                ),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Text(
+                        '${day.day}',
+                        style: textStyle,
+                      ),
+                    ),
+                    if (hasAppointments)
+                      Positioned(
+                        bottom: 2,
+                        right: 2,
+                        child: CircleAvatar(
+                          backgroundColor: Colors.white,
+                          radius: 8,
+                          child: Text(
+                            '${_appointmentsByDate[day]!.length}',
+                            style: const TextStyle(fontSize: 10, color: Colors.black),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
             },
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-            },
-            eventLoader: _getEventsForDay,
+            markedDateShowIcon: true,
+            markedDateIconMaxShown: 2,
+            markedDateMoreShowTotal: null,
           ),
           const SizedBox(height: 10),
           const Text(
@@ -115,18 +161,29 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           Expanded(
-            child: _buildSelectedDayAppointmentsList(),
+            child: SelectedDayAppointmentsList(
+              appointments: _getEventsForDay(_selectedDay),
+              fetchAppointments: fetchAppointments,
+              navigateToAppointmentDetailPage: navigateToAppointmentDetailPage, // Hier übergeben wir die Funktion
+              appointmentsByDate: _appointmentsByDate,
+              databaseHelper: _databaseHelper,
+            ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return const AddAppointmentDialog();
-            },
+        onPressed: () async {
+          // Navigieren Sie zur Appointment-Detailseite und warten Sie auf das Ergebnis
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AppointmentDetailPage(appointment: const {}, databaseHelper: _databaseHelper),
+            ),
           );
+          // Wenn ein Ergebnis zurückgegeben wurde, aktualisieren Sie die Termindaten
+          if (result != null) {
+            fetchAppointments();
+          }
         },
         child: const Icon(Icons.add),
       ),
@@ -134,53 +191,25 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   }
 
   List<Map<String, dynamic>> _getEventsForDay(DateTime day) {
-    return _appointmentsByDate[day] ?? [];
+    List<Map<String, dynamic>> eventsList = [];
+    List<dynamic> events = _appointmentsByDate[day] ?? [];
+    print('Ereignisse für den Tag $day:');
+    print(events); // Ausgabe der Ereignisse für den Tag
+    for (var event in events) {
+      if (event is Map<String, dynamic>) {
+        eventsList.add(event);
+      }
+    }
+    return eventsList;
   }
 
-  Widget _buildSelectedDayAppointmentsList() {
-    final List<Map<String, dynamic>> appointments =
-        _appointmentsByDate[_selectedDay] ?? [];
 
-    return ListView.builder(
-      itemCount: appointments.length,
-      itemBuilder: (context, index) {
-        final appointment = appointments[index];
-        return ListTile(
-          title: Text(
-            appointment['text'] ?? 'Kein Text verfügbar',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          subtitle: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              Text(
-                'Startzeit: ${appointment['start_time']} | Endzeit: ${appointment['end_time']}',
-                style: const TextStyle(fontSize: 14),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Beschreibung: ${appointment['description'] ?? 'Keine Beschreibung verfügbar'}',
-                style: const TextStyle(fontSize: 14),
-              ),
-            ],
-          ),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AppointmentDetailPage(appointment: appointment),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
+
+
 
   void _filterAppointments(String query) {
     if (query.isEmpty) {
-      fetchAppointments();
+      fetchAppointments(); // Zeige alle Termine, wenn die Suchanfrage leer ist
     } else {
       final filteredAppointments = _appointments.where((appointment) {
         final text = appointment['text']?.toString().toLowerCase() ?? '';
@@ -191,6 +220,20 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       });
     }
   }
+
+
+  // Die Funktion, um zur Appointment-Detailseite zu navigieren
+  // In Ihrer AppointmentsPage-Klasse
+  Future<dynamic> navigateToAppointmentDetailPage(BuildContext context, Map<String, dynamic> appointment, DatabaseHelper databaseHelper) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AppointmentDetailPage(appointment: appointment, databaseHelper: databaseHelper),
+      ),
+    );
+  }
+
+
 
   @override
   void dispose() {

@@ -8,12 +8,12 @@ def flutterVersionCode = 1
 def flutterVersionName = "1.0"
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "com.example.testbaulog"
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode flutterVersionCode
         versionName flutterVersionName
         namespace 'com.example.testbaulog'

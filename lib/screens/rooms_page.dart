@@ -1,36 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:testbaulog/screens/room_detail_page.dart';
-import 'package:grouped_list/grouped_list.dart'; // Import des grouped_list-Pakets
+import 'package:grouped_list/grouped_list.dart';
 import '../helpers/database_helper.dart';
 import '../widgets/add_room_dialog.dart';
-import '../widgets/filter_bar.dart'; // Import der FilterBar
+import '../widgets/filter_bar.dart';
+import 'edit_level_page.dart';
 
 class RoomsPage extends StatefulWidget {
   final Database database;
 
-  const RoomsPage({super.key, required this.database});
+  const RoomsPage({Key? key, required this.database}) : super(key: key);
 
   @override
   _RoomsPageState createState() => _RoomsPageState();
 }
 
 class _RoomsPageState extends State<RoomsPage> {
-  List<Map<String, dynamic>> _rooms = []; // Initialize with an empty list
+  late List<Map<String, dynamic>> _rooms;
   String _searchQuery = '';
   String _selectedSortOption = '';
 
   @override
   void initState() {
     super.initState();
+    _rooms = [];
     fetchRooms();
   }
 
   Future<void> fetchRooms() async {
     final DatabaseHelper dbHelper = DatabaseHelper(database: widget.database);
     try {
-      final List<Map<String, dynamic>> rooms =
-      await dbHelper.fetchItems('ROOM');
+      final List<Map<String, dynamic>> rooms = await dbHelper.fetchItems('ROOM');
 
       if (mounted) {
         setState(() {
@@ -40,6 +41,20 @@ class _RoomsPageState extends State<RoomsPage> {
     } catch (e) {
       print('Error fetching rooms: $e');
       // Handle error if needed
+    }
+  }
+
+  Future<int> countAppointmentsInRoom(int roomId) async {
+    final DatabaseHelper dbHelper = DatabaseHelper(database: widget.database);
+    try {
+      final List<Map<String, dynamic>> appointments = await dbHelper.fetchItemsWithWhere(
+          'APPOINTMENT',
+          'room_id = ? AND done = ?',
+          [roomId, 0]); // Assuming done=1 means the appointment is done
+      return appointments.length;
+    } catch (e) {
+      print('Error counting appointments: $e');
+      return 0;
     }
   }
 
@@ -76,10 +91,24 @@ class _RoomsPageState extends State<RoomsPage> {
   void _sortRooms(String option) {
     setState(() {
       _selectedSortOption = option;
+      if (option == 'Name') {
+        _rooms.sort((a, b) => a['name'].compareTo(b['name']));
+      } else if (option == 'Access') {
+        _rooms.sort((a, b) => a['access'].compareTo(b['access']));
+      }
     });
-    // Implement logic to sort rooms based on selected option
   }
 
+  void _editLevel(Map<String, dynamic> levelData) {
+    // Implement logic to edit level
+    // Assuming you navigate to a new screen for editing level
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditLevelPage(levelData: levelData, databaseHelper: DatabaseHelper(database: widget.database),
+      ),
+    ));
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,11 +125,40 @@ class _RoomsPageState extends State<RoomsPage> {
             child: _rooms.isNotEmpty
                 ? GroupedListView<dynamic, String>(
               elements: _rooms,
-              groupBy: (room) => room['level_id'].toString(),
-              groupSeparatorBuilder: (String levelId) => ListTile(
-                title: Text('Level $levelId'),
-                tileColor: Colors.grey[300],
-              ),
+              groupBy: (room) {
+                final levelId = room['level_id'];
+                final buildingId = room['building_id'];
+
+                if (levelId != null && buildingId != null) {
+                  final levelIdString = levelId.toString();
+                  final buildingIdString = buildingId.toString();
+                  return '$levelIdString' + '_' + '$buildingIdString';
+                } else if (levelId != null && buildingId == null) {
+                  final levelIdString = levelId.toString();
+                  return '$levelIdString';
+                } else {
+                  return '';
+                }
+              },
+              groupSeparatorBuilder: (String groupByValue) {
+                final levelId = int.parse(groupByValue);
+                final levelData = _rooms.firstWhere(
+                      (room) => room['level_id'] == levelId,
+                  orElse: () => {},
+                );
+
+                if (levelData.isNotEmpty) {
+                  return ListTile(
+                    title: Text('Level ${levelData['id']} - Gebäude ${levelData['building_id']}'),
+                    tileColor: Colors.grey[300],
+                    onTap: () {
+                      _editLevel(levelData);
+                    },
+                  );
+                } else {
+                  return SizedBox(); // Return an empty widget if no matching level data found
+                }
+              },
               itemBuilder: (context, room) => Padding(
                 padding: const EdgeInsets.all(2.0),
                 child: Container(
@@ -118,6 +176,19 @@ class _RoomsPageState extends State<RoomsPage> {
                       subtitle: Text(
                         'Zugang: ${room['access']}',
                         style: const TextStyle(color: Colors.black),
+                      ),
+                      trailing: FutureBuilder<int>(
+                        future: countAppointmentsInRoom(room['id']),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return const Text('Error');
+                          } else {
+                            final int count = snapshot.data ?? 0;
+                            return Text('$count Termine');
+                          }
+                        },
                       ),
                       onTap: () {
                         Navigator.push(
@@ -142,13 +213,16 @@ class _RoomsPageState extends State<RoomsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
+        onPressed: () async {
+          // Zeige den AddRoomDialog an
+          await showDialog(
             context: context,
             builder: (BuildContext context) {
               return AddRoomDialog(database: widget.database);
             },
           );
+          // Aktualisiere die Raumliste
+          fetchRooms();
         },
         child: const Icon(Icons.add),
       ),
