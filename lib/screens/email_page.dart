@@ -6,14 +6,14 @@ import '../helpers/database_helper.dart';
 class EmailPage extends StatefulWidget {
   final Database database;
 
-  const EmailPage({super.key, required this.database});
+  const EmailPage({Key? key, required this.database}) : super(key: key);
 
   @override
   _EmailPageState createState() => _EmailPageState();
 }
 
 class _EmailPageState extends State<EmailPage> {
-  late int _selectedTemplateId = 0; // Definiere _selectedTemplateId
+  late int _selectedTemplateId = 0;
   late List<Map<String, dynamic>> _emailTemplates;
   late DatabaseHelper _databaseHelper;
   final _formKey = GlobalKey<FormState>();
@@ -37,8 +37,6 @@ class _EmailPageState extends State<EmailPage> {
       await _databaseHelper.fetchItems('EMAIL_TEMPLATE');
       setState(() {
         _emailTemplates = templates;
-        // Hier wird der Standardwert für _selectedTemplateId gesetzt,
-        // um die ID der ersten Vorlage auszuwählen,
         if (templates.isNotEmpty) {
           _selectedTemplateId = templates.first['id'];
           _subjectController.text = templates.first['subject'];
@@ -68,7 +66,6 @@ class _EmailPageState extends State<EmailPage> {
       final subject = _subjectController.text;
       final body = _bodyController.text;
 
-      // Speichern Sie die Daten in der Datenbank
       try {
         await widget.database.insert('EMAIL', {
           'recipient': recipient,
@@ -77,7 +74,8 @@ class _EmailPageState extends State<EmailPage> {
           'subject': subject,
           'body': body,
         });
-        // Hier wird die URL für die E-Mail erstellt
+
+        // Erstellen der URI für die E-Mail an die Gmail-App
         final Uri emailLaunchUri = Uri(
           scheme: 'mailto',
           path: recipient,
@@ -88,26 +86,34 @@ class _EmailPageState extends State<EmailPage> {
             'body': body,
           },
         );
-          await launchUrl(emailLaunchUri);
-        // Zeigen Sie eine Bestätigungsmeldung an oder navigieren Sie zu einer anderen Seite
+
+        // Entfernen von '+' und Ersetzen durch '%20'
+        final String _emailUriString = emailLaunchUri
+            .toString()
+            .replaceAll('+', '%20');
+
+        // Öffnen der Gmail-App mit der korrigierten URI
+        await launchUrl(Uri.parse(_emailUriString));
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email gesendet und gespeichert!')),
+          const SnackBar(content: Text('Email sent and saved!')),
         );
       } catch (e) {
         print('Error saving email: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Fehler beim Speichern der Email')),
+          const SnackBar(content: Text('Error saving email')),
         );
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'E-Mail senden',
+          'Send Email',
           style: TextStyle(fontSize: 20.0),
         ),
       ),
@@ -117,7 +123,7 @@ class _EmailPageState extends State<EmailPage> {
           key: _formKey,
           child: ListView(
             children: [
-              const SizedBox(height: 20), // Mehr Platz zwischen Dropdown und Betreff
+              const SizedBox(height: 20),
               DropdownButtonFormField<int>(
                 value: _selectedTemplateId,
                 items: _emailTemplates
@@ -130,21 +136,20 @@ class _EmailPageState extends State<EmailPage> {
                     .toList(),
                 onChanged: (int? newValue) {
                   if (newValue != null) {
-                    _selectTemplate(newValue); // Hier wird die Vorlagen-ID übergeben
+                    _selectTemplate(newValue);
                   }
                 },
                 decoration: const InputDecoration(
-                  labelText: 'E-Mail-Vorlage auswählen',
+                  labelText: 'Select Email Template',
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.all(12.0),
                 ),
               ),
-
-              const SizedBox(height: 20), // Mehr Platz zwischen Dropdown und Betreff
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _recipientController,
                 decoration: const InputDecoration(
-                  labelText: 'An:',
+                  labelText: 'To:',
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.all(12.0),
                 ),
@@ -177,7 +182,7 @@ class _EmailPageState extends State<EmailPage> {
               TextFormField(
                 controller: _subjectController,
                 decoration: const InputDecoration(
-                  labelText: 'Betreff:',
+                  labelText: 'Subject:',
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.all(12.0),
                 ),
@@ -191,9 +196,9 @@ class _EmailPageState extends State<EmailPage> {
               const SizedBox(height: 30),
               TextFormField(
                 controller: _bodyController,
-                minLines: 5, // Mindestanzahl von Zeilen
-                maxLines: null, // Anzahl der Zeilen ist unbegrenzt
-                keyboardType: TextInputType.multiline, // Mehrzeiliges Textfeld
+                minLines: 5,
+                maxLines: null,
+                keyboardType: TextInputType.multiline,
                 decoration: const InputDecoration(
                   labelText: 'Text:',
                   border: OutlineInputBorder(),
@@ -213,7 +218,7 @@ class _EmailPageState extends State<EmailPage> {
                   padding: const EdgeInsets.symmetric(vertical: 14.0),
                 ),
                 child: const Text(
-                  'E-Mail senden',
+                  'Send Email',
                   style: TextStyle(fontSize: 18.0),
                 ),
               ),

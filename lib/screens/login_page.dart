@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import '../helpers/database_helper.dart';
-// Import AddAppointmentPage
 
 class LoginPage extends StatefulWidget {
   final Database database;
 
-  const LoginPage({super.key, required this.database});
+  const LoginPage({Key? key, required this.database}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -21,59 +20,75 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Login'),
+        automaticallyImplyLeading: false, // Hide the back button
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-            ),
-            const SizedBox(height: 20.0),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
-            ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () async {
-                final String email = _emailController.text.trim();
-                final String password = _passwordController.text.trim();
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/logo.png', // Assuming your logo is named logo.png and is placed inside the assets folder
+                  height: 100,
+                  width: 100,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'BauLog - Alpha Version',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Roboto', // Specify your desired font family here
+                  ),
+                ),
+                const SizedBox(height: 30),
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                ElevatedButton(
+                  onPressed: () async {
+                    final String email = _emailController.text.trim();
+                    final String password = _passwordController.text.trim();
 
-                // Authenticate user
-                final DatabaseHelper dbHelper = DatabaseHelper(database: widget.database);
-                final bool isAuthenticated = await dbHelper.authenticateUser(email, password);
-                if (isAuthenticated) {
-                  // Navigate to the main screen upon successful authentication
-                  Navigator.pushReplacementNamed(context, '/');
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Invalid email or password.'),
-                    ),
-                  );
-                }
-              },
-              child: const Text('Login'),
+                    // Authenticate user
+                    final DatabaseHelper dbHelper =
+                    DatabaseHelper(database: widget.database);
+                    final bool isAuthenticated =
+                    await dbHelper.authenticateUser(email, password);
+                    if (isAuthenticated) {
+                      // Navigate to the main screen upon successful authentication
+                      Navigator.pushReplacementNamed(context, '/');
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Invalid email or password.'),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Login'),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Deaktiviere die Zurücknavigation
-    ModalRoute.of(context)?.removeScopedWillPopCallback(_onWillPop);
-    ModalRoute.of(context)?.addScopedWillPopCallback(_onWillPop);
-  }
-
-  Future<bool> _onWillPop() async {
-    return false; // Blockiere das Zurücknavigieren
   }
 }

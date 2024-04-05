@@ -26,8 +26,8 @@ void main() async {
   final database = await initializeDatabase();
   //createAppointmentTable(database);
   printAppointments(database);
-  createLevelEntry('Etage 1', 1, database);
-  createLevelEntry('Etage 2', 1, database);
+  createLevelEntry('1', 1, database);
+  createLevelEntry('2', 1, database);
   runApp(MyApp(database: database));
 }
 
