@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../helpers/database_helper.dart';
 
 class AppointmentDetailPage extends StatefulWidget {
@@ -77,8 +78,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
               const SizedBox(height: 10),
               TextField(
                 controller: _dateEditingController,
+                onTap: _selectDate,
+                readOnly: true,
                 decoration: const InputDecoration(
-                  labelText: 'Datum (YYYY-MM-DD)',
+                  labelText: 'Datum (TT.MM.JJJJ)',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -88,8 +91,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                   Expanded(
                     child: TextField(
                       controller: _startTimeEditingController,
+                      onTap: _selectStartTime,
+                      readOnly: true,
                       decoration: const InputDecoration(
-                        labelText: 'Startzeit (HH:MM)',
+                        labelText: 'Startzeit',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -98,8 +103,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                   Expanded(
                     child: TextField(
                       controller: _endTimeEditingController,
+                      onTap: _selectEndTime,
+                      readOnly: true,
                       decoration: const InputDecoration(
-                        labelText: 'Endzeit (HH:MM)',
+                        labelText: 'Endzeit',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -246,12 +253,69 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     });
   }
 
-  // Method to generate a unique ID if necessary
-  Future<int> _generateUniqueId() async {
-    // Implement your logic to generate a unique ID
-    // For example, you can use a timestamp, a random number, or any other method that guarantees uniqueness
-    // In this example, I'll use a simple timestamp-based approach
-    return DateTime.now().millisecondsSinceEpoch;
+  Future<void> _selectDate() async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: _parseDate(_dateEditingController.text),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (selectedDate != null) {
+      setState(() {
+        _dateEditingController.text = _formatDate(selectedDate);
+      });
+    }
+  }
+
+  Future<void> _selectStartTime() async {
+    TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: _parseTime(_startTimeEditingController.text),
+    );
+    if (selectedTime != null) {
+      setState(() {
+        _startTimeEditingController.text = _formatTimeOfDay(selectedTime);
+      });
+    }
+  }
+
+  Future<void> _selectEndTime() async {
+    TimeOfDay? selectedTime = await showTimePicker(
+      context: context,
+      initialTime: _parseTime(_endTimeEditingController.text),
+    );
+    if (selectedTime != null) {
+      setState(() {
+        _endTimeEditingController.text = _formatTimeOfDay(selectedTime);
+      });
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    return DateFormat('dd.MM.yyyy').format(date);
+  }
+
+  String _formatTimeOfDay(TimeOfDay timeOfDay) {
+    final now = DateTime.now();
+    final dt = DateTime(now.year, now.month, now.day, timeOfDay.hour, timeOfDay.minute);
+    return DateFormat.Hm().format(dt);
+  }
+
+  DateTime _parseDate(String date) {
+    try {
+      return DateFormat('dd.MM.yyyy').parse(date);
+    } catch (e) {
+      return DateTime.now();
+    }
+  }
+
+  TimeOfDay _parseTime(String time) {
+    try {
+      final dt = DateFormat.Hm().parse(time);
+      return TimeOfDay(hour: dt.hour, minute: dt.minute);
+    } catch (e) {
+      return TimeOfDay(hour: 0, minute: 0);
+    }
   }
 
   @override

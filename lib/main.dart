@@ -56,13 +56,14 @@ Future<Database> initializeDatabase() async {
 
   DatabaseHelper databaseHelper = DatabaseHelper(database: database);
   await databaseHelper.createTablesIfNotExists();
-  //await databaseHelper.insertUser('l', 'l');
+  await databaseHelper.insertUser('l', 'l');
+  await printEmailTemplates(databaseHelper);
   return database;
 }
 
 Future<void> printEmailTemplates(databaseHelper) async {
   try {
-    final List<Map<String, dynamic>> emailTemplates = await databaseHelper.fetchItems('EMAIL_TEMPLATE');
+    final List<Map<String, dynamic>> emailTemplates = await databaseHelper.fetchItems('APPOINTMENT');
     emailTemplates.forEach((template) {
       print(template); // Gibt jeden Datensatz in der Liste aus
     });

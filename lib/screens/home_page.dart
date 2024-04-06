@@ -83,12 +83,6 @@ class HomePage extends StatelessWidget {
     return userCount;
   }
 
-  Future<String> _getPlaceholderValue() async {
-    // Hier kannst du die Logik einfügen, um den Wert für die Placeholder-Kacheln zu erhalten
-    // Zum Beispiel: Eine Abfrage ausführen, einen API-Aufruf durchführen, etc.
-    return 'Placeholder';
-  }
-
   Widget _buildTile({
     required BuildContext context,
     required String title,

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:bcrypt/bcrypt.dart';
 
@@ -219,8 +220,8 @@ class DatabaseHelper {
       {
         'id': id,
         'appointment_date': appointmentDate.toIso8601String(),
-        'start_time': startTime.toIso8601String(),
-        'end_time': endTime.toIso8601String(),
+        'start_time': DateFormat('kk:mm').format(startTime),
+        'end_time': DateFormat('kk:mm').format(endTime),
         'text': text,
         'description': description,
         'location': '', // You may set the location here if applicable

@@ -191,8 +191,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   List<Map<String, dynamic>> _getEventsForDay(DateTime day) {
     List<Map<String, dynamic>> eventsList = [];
     List<dynamic> events = _appointmentsByDate[day] ?? [];
-    print('Ereignisse für den Tag $day:');
-    print(events); // Ausgabe der Ereignisse für den Tag
     for (var event in events) {
       if (event is Map<String, dynamic>) {
         eventsList.add(event);

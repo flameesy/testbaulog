@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart'; // Neu hinzugefügt
+import 'package:image_picker/image_picker.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../helpers/database_helper.dart';
@@ -11,7 +9,7 @@ import '../helpers/database_helper.dart';
 class EmailPage extends StatefulWidget {
   final Database database;
 
-  const EmailPage({Key? key, required this.database}) : super(key: key);
+  const EmailPage({super.key, required this.database});
 
   @override
   _EmailPageState createState() => _EmailPageState();
@@ -27,7 +25,6 @@ class _EmailPageState extends State<EmailPage> {
   final _bccController = TextEditingController();
   final _subjectController = TextEditingController();
   final _bodyController = TextEditingController();
-  late Uint8List _logoBytes;
   XFile? _imageFile; // Neu hinzugefügt
 
   @override
