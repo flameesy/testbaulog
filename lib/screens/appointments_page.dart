@@ -118,6 +118,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                 DateTime day,
                 ) {
               bool hasAppointments = _appointmentsByDate.containsKey(day);
+              Color dayColor = isToday ? Theme.of(context).primaryColor : textStyle.color!;
               return Container(
                 decoration: BoxDecoration(
                   color: null,
@@ -129,7 +130,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                     Center(
                       child: Text(
                         '${day.day}',
-                        style: textStyle,
+                        style: textStyle.copyWith(color: dayColor), // Setzen Sie die Farbe entsprechend dem Typ des Tages
                       ),
                     ),
                     if (hasAppointments)

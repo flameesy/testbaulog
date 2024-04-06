@@ -43,11 +43,6 @@ class SelectedDayAppointmentsList extends StatelessWidget {
           );
         } else {
           final appointment = appointments[index];
-          print('Termin:');
-          print('$appointment');
-          print('ID: ${appointment['id']}');
-          print('Startzeit: ${appointment['start_time']}');
-          print('Endzeit: ${appointment['end_time']}');
           return Card(
             elevation: 4,
             margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),

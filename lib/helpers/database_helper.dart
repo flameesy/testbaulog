@@ -171,6 +171,19 @@ class DatabaseHelper {
       sync_status INTEGER DEFAULT 0, 
       FOREIGN KEY (template_id) REFERENCES EMAIL_TEMPLATE(id)
     )
+  ''',
+      'EMAIL_VARIABLE': '''
+    CREATE TABLE IF NOT EXISTS EMAIL_VARIABLE (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT NOT NULL,
+      source_table TEXT NOT NULL,
+      source_field TEXT NOT NULL,
+      default_value TEXT,
+      data_type TEXT,
+      required INTEGER DEFAULT 0,
+      format TEXT
+    )
   '''
     };
 
