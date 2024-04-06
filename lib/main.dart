@@ -24,33 +24,8 @@ import 'theme/baulog_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final database = await initializeDatabase();
-  //createAppointmentTable(database);
-  //printAppointments(database);
-  createLevelEntry('1', 1, database);
-  createLevelEntry('2', 1, database);
-  createBuilding('Westbank 1', 'Westlicher Teil Bank 1', database);
-  createBuilding('Ostbank 1','Westlicher Teil Bank 1', database);
   runApp(MyApp(database: database));
 }
-
-Future<void> createLevelEntry(String name, int buildingId,database) async {
-  final DatabaseHelper dbHelper = DatabaseHelper(database: database);
-  try {
-    await dbHelper.insertLevel(name,buildingId);
-  } catch (e) {
-    print('Error creating Level Entry: $e');
-  }
-}
-Future<void> createBuilding(String name, description,database) async {
-  final DatabaseHelper dbHelper = DatabaseHelper(database: database);
-  try {
-    await dbHelper.addBuilding(name,'description');
-  } catch (e) {
-    print('Error creating Level Entry: $e');
-  }
-}
-
-
 
 Future<Database> initializeDatabase() async {
   late Database database;
@@ -81,35 +56,20 @@ Future<Database> initializeDatabase() async {
 
   DatabaseHelper databaseHelper = DatabaseHelper(database: database);
   await databaseHelper.createTablesIfNotExists();
-  databaseHelper.printAppointmentTableSchema();
   //await databaseHelper.insertUser('l', 'l');
   return database;
 }
 
-Future<void> printAppointments(database) async {
-  DatabaseHelper databaseHelper = DatabaseHelper(database: database);
-  List<Map<String, dynamic>> appointments = await databaseHelper.fetchAppointments(); // Annahme: getAppointments ist eine Methode, um alle Termine aus der Datenbank abzurufen
-  for (var appointment in appointments) {
-    print('Appointment: $appointment');
-  }
-}
-
-void createAppointmentTable(Database database) async {
+Future<void> printEmailTemplates(databaseHelper) async {
   try {
-    await database.execute('''      
-      
-      ALTER TABLE APPOINTMENT
-      ADD COLUMN location TEXT;
-    ''');
-    var databaseHelper = DatabaseHelper(database: database);
-    databaseHelper.printAppointmentTableSchema();
-    print('APPOINTMENT table altered successfully.');
-  } catch (e) {
-    print('Error altering APPOINTMENT table: $e');
+    final List<Map<String, dynamic>> emailTemplates = await databaseHelper.fetchItems('EMAIL_TEMPLATE');
+    emailTemplates.forEach((template) {
+      print(template); // Gibt jeden Datensatz in der Liste aus
+    });
+  } catch (error) {
+    print('Error fetching email templates: $error');
   }
 }
-
-
 
 class MyApp extends StatelessWidget {
   final Database database;

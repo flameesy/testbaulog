@@ -71,15 +71,6 @@ class _EditLevelPageState extends State<EditLevelPage> {
                 int? buildingIdParsed = int.tryParse(_buildingIdController.text.trim());
                 final int buildingId = buildingIdParsed ?? widget.levelData['building_id'];
 
-                final Map<String, dynamic> updatedLevelData = {
-                  'id': widget.levelData['id'],
-                  'name': name,
-                  'room_count': roomCount,
-                  'sync_status': syncStatus,
-                  'building_id': buildingId,
-                  // Weitere Felder entsprechend hinzufügen, falls vorhanden
-                };
-
                 await widget.databaseHelper.updateLevel(
                   widget.levelData['id'],
                   name,

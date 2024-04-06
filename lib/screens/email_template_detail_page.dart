@@ -5,7 +5,7 @@ class EmailTemplateDetailPage extends StatefulWidget {
   final DatabaseHelper databaseHelper;
   final Map<String, dynamic>? templateData; // Template-Daten für den Bearbeitungsmodus
 
-  const EmailTemplateDetailPage({super.key, required this.databaseHelper, this.templateData});
+  const EmailTemplateDetailPage({Key? key, required this.databaseHelper, this.templateData}) : super(key: key);
 
   @override
   _EmailTemplateDetailPageState createState() => _EmailTemplateDetailPageState();

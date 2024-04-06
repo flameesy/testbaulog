@@ -14,16 +14,8 @@ VALUES
 
 INSERT INTO USERS (email, password, sync_status)
 VALUES
-('user1@example.com', 'password123', 0),
-('user2@example.com', 'securepass', 0),
-('user3@example.com', 'letmein', 0),
-('user4@example.com', 'password123', 0),
-('user5@example.com', 'securepass', 0),
-('user6@example.com', 'letmein', 0),
-('user7@example.com', 'password123', 0),
-('user8@example.com', 'securepass', 0),
-('user9@example.com', 'letmein', 0),
-('user10@example.com', 'password123', 0);
+('l', 'l', 0),
+('demo', 'demo123', 0);
 
 INSERT INTO LOG (action, table_name, record_id, old_data, new_data, sync_status)
 VALUES

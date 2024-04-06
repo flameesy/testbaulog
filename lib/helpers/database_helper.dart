@@ -213,14 +213,6 @@ class DatabaseHelper {
     // Generate a unique ID
     int id = await _generateUniqueId();
 
-    // Construct the SQL query string
-    String query = '''
-      INSERT INTO APPOINTMENT (id, appointment_date, start_time, end_time, text, description, location, participant_ids, reminder_time, created_at, updated_at, platform_id, room_id, building_id, level_id)
-      VALUES ($id, '${appointmentDate.toIso8601String()}', '${startTime.toIso8601String()}', '${endTime.toIso8601String()}', '$text', '$description', '', '', NULL, '${now.toIso8601String()}', '${now.toIso8601String()}', $platformId, $roomId, 0, 0);
-    ''';
-
-    print('SQL Query: $query');
-
     // Execute the SQL query
     await database.insert(
       'APPOINTMENT',

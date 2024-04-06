@@ -222,7 +222,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
 
   Future<void> _generateAndSaveNewAppointment(Map<String, dynamic> newAppointment) async {
     // Check if the appointment already has an ID, if not, generate a new one
-    int appointmentId = newAppointment['id'] ?? await _generateUniqueId();
+    //int appointmentId = newAppointment['id'] ?? await _generateUniqueId();
 
     // Insert the appointment into the database
     widget.databaseHelper.insertAppointment(

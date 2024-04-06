@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart'; // Neu hinzugefügt
 import 'package:sqflite_common/sqlite_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../helpers/database_helper.dart';
@@ -6,15 +11,15 @@ import '../helpers/database_helper.dart';
 class EmailPage extends StatefulWidget {
   final Database database;
 
-  const EmailPage({super.key, required this.database});
+  const EmailPage({Key? key, required this.database}) : super(key: key);
 
   @override
   _EmailPageState createState() => _EmailPageState();
 }
 
 class _EmailPageState extends State<EmailPage> {
-  late int _selectedTemplateId = 0;
-  late List<Map<String, dynamic>> _emailTemplates;
+  int? _selectedTemplateId;
+  List<Map<String, dynamic>> _emailTemplates = [];
   late DatabaseHelper _databaseHelper;
   final _formKey = GlobalKey<FormState>();
   final _recipientController = TextEditingController();
@@ -22,11 +27,12 @@ class _EmailPageState extends State<EmailPage> {
   final _bccController = TextEditingController();
   final _subjectController = TextEditingController();
   final _bodyController = TextEditingController();
+  late Uint8List _logoBytes;
+  XFile? _imageFile; // Neu hinzugefügt
 
   @override
   void initState() {
     super.initState();
-    _emailTemplates = [];
     _databaseHelper = DatabaseHelper(database: widget.database);
     _loadEmailTemplates();
   }
@@ -37,11 +43,6 @@ class _EmailPageState extends State<EmailPage> {
       await _databaseHelper.fetchItems('EMAIL_TEMPLATE');
       setState(() {
         _emailTemplates = templates;
-        if (templates.isNotEmpty) {
-          _selectedTemplateId = templates.first['id'];
-          _subjectController.text = templates.first['subject'];
-          _bodyController.text = templates.first['body'];
-        }
       });
     } catch (e) {
       print('Error loading email templates: $e');
@@ -53,8 +54,18 @@ class _EmailPageState extends State<EmailPage> {
         .firstWhere((template) => template['id'] == templateId);
     setState(() {
       _selectedTemplateId = templateId;
-      _subjectController.text = selectedTemplate['subject'];
-      _bodyController.text = selectedTemplate['body'];
+      _subjectController.text =
+          _replacePlaceholders(selectedTemplate['subject']);
+      _bodyController.text = _replacePlaceholders(selectedTemplate['body']);
+    });
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _imageFile = pickedFile;
     });
   }
 
@@ -64,35 +75,13 @@ class _EmailPageState extends State<EmailPage> {
       final cc = _ccController.text;
       final bcc = _bccController.text;
       final subject = _subjectController.text;
-      final body = _bodyController.text;
+      final body = _replacePlaceholders(_bodyController.text);
 
       try {
-        await widget.database.insert('EMAIL', {
-          'recipient': recipient,
-          'cc': cc,
-          'bcc': bcc,
-          'subject': subject,
-          'body': body,
-        });
+        final String emailUriString =
+            'mailto:$recipient?cc=$cc&bcc=$bcc&subject=$subject&body=$body';
 
-        // Erstellen der URI für die E-Mail an die Gmail-App
-        final Uri emailLaunchUri = Uri(
-          scheme: 'mailto',
-          path: recipient,
-          queryParameters: {
-            'cc': cc,
-            'bcc': bcc,
-            'subject': subject,
-            'body': body,
-          },
-        );
-
-        // Entfernen von '+' und Ersetzen durch '%20'
-        final String emailUriString = emailLaunchUri
-            .toString()
-            .replaceAll('+', '%20');
-
-        // Öffnen der Gmail-App mit der korrigierten URI
+        // Öffnen der E-Mail-App mit der HTML-formatierten E-Mail
         await launchUrl(Uri.parse(emailUriString));
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -105,6 +94,44 @@ class _EmailPageState extends State<EmailPage> {
         );
       }
     }
+  }
+
+  // Methode zum Laden des Bilds
+  Future<void> _loadImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = pickedFile;
+      });
+    }
+  }
+
+// Methode zum Einbetten des Bilds in den E-Mail-Body
+  Future<String> _embedImage() async {
+    if (_imageFile != null) {
+      final bytes = await _imageFile!.readAsBytes();
+      final String base64Image = base64Encode(bytes);
+      return 'data:image/png;base64,$base64Image';
+    } else {
+      return ''; // Falls kein Bild ausgewählt wurde
+    }
+  }
+
+// Methode zum Ersetzen der Platzhalter und Einbetten des Bilds
+  String _replacePlaceholders(String body) {
+    // Hier ersetzen Sie die Platzhalter in der Vorlage durch die entsprechenden Werte
+    body = body.replaceAll('ORDER_ID', '55432');
+
+    // HTML-Format für das Bild und die Signatur
+    final String imageHtml = '<img src="${_embedImage()}" alt="User Image">';
+    final String signatureHtml =
+        'Best regards, <a href="https://example.com">User</a>';
+
+    // Fügen Sie das Bild und die Signatur dem E-Mail-Body hinzu
+    body += '<br><br>$imageHtml<br><br>$signatureHtml';
+
+    return body;
   }
 
 
@@ -126,14 +153,18 @@ class _EmailPageState extends State<EmailPage> {
               const SizedBox(height: 20),
               DropdownButtonFormField<int>(
                 value: _selectedTemplateId,
-                items: _emailTemplates
-                    .map<DropdownMenuItem<int>>(
-                      (template) => DropdownMenuItem<int>(
-                    value: template['id'],
-                    child: Text(template['name']),
+                items: [
+                  DropdownMenuItem<int>(
+                    value: null, // Standardwert auf null setzen
+                    child: const Text('Select Email Template'),
                   ),
-                )
-                    .toList(),
+                  ..._emailTemplates.map<DropdownMenuItem<int>>(
+                        (template) => DropdownMenuItem<int>(
+                      value: template['id'],
+                      child: Text(template['name'] ?? ''),
+                    ),
+                  ),
+                ],
                 onChanged: (int? newValue) {
                   if (newValue != null) {
                     _selectTemplate(newValue);
@@ -145,6 +176,13 @@ class _EmailPageState extends State<EmailPage> {
                   contentPadding: EdgeInsets.all(12.0),
                 ),
               ),
+
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: const Text('Pick Image'), // Neu hinzugefügt
+              ),
+
               const SizedBox(height: 20),
               TextFormField(
                 controller: _recipientController,

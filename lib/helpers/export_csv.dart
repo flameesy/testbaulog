@@ -14,8 +14,8 @@ class ExportCSV {
     try {
       DatabaseHelper databaseHelper = DatabaseHelper(database: database);
       // Daten aus der Tabelle abrufen
-      final List<Map<String, dynamic>> tableData = await database.query(
-          tableName);
+      final List<Map<String, dynamic>> tableData = await databaseHelper.fetchItems(tableName);//await database.query(tableName);
+
 
       // Verzeichnis für die Speicherung der CSV-Datei abrufen
       final Directory directory = await getApplicationDocumentsDirectory();
