@@ -118,7 +118,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                 DateTime day,
                 ) {
               bool hasAppointments = _appointmentsByDate.containsKey(day);
-              Color dayColor = isToday ? Theme.of(context).primaryColor : textStyle.color!;
+              Color dayColor = isToday ? textStyle.decorationColor! : textStyle.color!;
               return Container(
                 decoration: BoxDecoration(
                   color: null,

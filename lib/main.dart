@@ -64,9 +64,9 @@ Future<Database> initializeDatabase() async {
 Future<void> printEmailTemplates(databaseHelper) async {
   try {
     final List<Map<String, dynamic>> emailTemplates = await databaseHelper.fetchItems('APPOINTMENT');
-    emailTemplates.forEach((template) {
+    for (var template in emailTemplates) {
       print(template); // Gibt jeden Datensatz in der Liste aus
-    });
+    }
   } catch (error) {
     print('Error fetching email templates: $error');
   }

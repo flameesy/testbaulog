@@ -145,6 +145,7 @@ class DatabaseHelper {
       name TEXT NOT NULL,
       subject TEXT NOT NULL,
       body TEXT NOT NULL,
+      global INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       sync_status INTEGER DEFAULT 0 

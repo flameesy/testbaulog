@@ -122,7 +122,7 @@ class _EmailPageState extends State<EmailPage> {
 
     // HTML-Format für das Bild und die Signatur
     final String imageHtml = '<img src="${_embedImage()}" alt="User Image">';
-    final String signatureHtml =
+    const String signatureHtml =
         'Best regards, <a href="https://example.com">User</a>';
 
     // Fügen Sie das Bild und die Signatur dem E-Mail-Body hinzu
@@ -151,9 +151,9 @@ class _EmailPageState extends State<EmailPage> {
               DropdownButtonFormField<int>(
                 value: _selectedTemplateId,
                 items: [
-                  DropdownMenuItem<int>(
+                  const DropdownMenuItem<int>(
                     value: null, // Standardwert auf null setzen
-                    child: const Text('Select Email Template'),
+                    child: Text('Select Email Template'),
                   ),
                   ..._emailTemplates.map<DropdownMenuItem<int>>(
                         (template) => DropdownMenuItem<int>(
