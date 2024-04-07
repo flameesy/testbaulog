@@ -26,6 +26,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   @override
   void initState() {
     super.initState();
+    print('Appointment Date: ${widget.appointment['appointment_date']}');
     _textEditingController = TextEditingController(text: widget.appointment['text'] ?? '');
     _dateEditingController = TextEditingController(text: _formatDate(widget.appointment['appointment_date']));
     _startTimeEditingController = TextEditingController(text: _formatTime(widget.appointment['start_time']));
@@ -35,8 +36,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     _platformIdEditingController = TextEditingController(text: widget.appointment['platform_id']?.toString() ?? '');
     _roomIdEditingController = TextEditingController(text: widget.appointment['room_id']?.toString() ?? '');
     _buildingIdEditingController = TextEditingController(text: widget.appointment['building_id']?.toString() ?? '');
-  }
 
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -215,9 +216,27 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     }
   }
 
-  String _formatDate(DateTime date) {
-    return DateFormat('dd.MM.yyyy').format(date);
+  String _formatDate(dynamic date) {
+    if (date == null) {
+      return DateFormat('dd.MM.yyyy').format(DateTime.now());
+    } else if (date is String) {
+      // Wenn date ein String ist, versuchen wir ihn in ein DateTime-Objekt umzuwandeln
+      try {
+        final parsedDate = DateTime.parse(date);
+        return DateFormat('dd.MM.yyyy').format(parsedDate);
+      } catch (e) {
+        // Fehler beim Parsen des Datums, geben Sie das aktuelle Datum zurück
+        return DateFormat('dd.MM.yyyy').format(DateTime.now());
+      }
+    } else if (date is DateTime) {
+      // Wenn date bereits ein DateTime-Objekt ist, formatieren wir es direkt
+      return DateFormat('dd.MM.yyyy').format(date);
+    } else {
+      // Für alle anderen Fälle geben wir das aktuelle Datum zurück
+      return DateFormat('dd.MM.yyyy').format(DateTime.now());
+    }
   }
+
 
   String _formatTime(String? time) {
     if (time == null || time.isEmpty) {
@@ -228,7 +247,6 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
       return timePart; // Gib den Zeit-Teil zurück
     }
   }
-
 
   String _formatTimeOfDay(TimeOfDay timeOfDay) {
     final now = DateTime.now();

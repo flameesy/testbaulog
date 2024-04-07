@@ -1,16 +1,16 @@
 --DEUTSCHE DATEN
 INSERT INTO APPOINTMENT (appointment_date, start_time, end_time, text, description, location, participant_ids, reminder_time, platform_id, room_id, building_id, level_id)
 VALUES
-('2024-04-05', '2024-04-05 08:00:00', '2024-04-05 09:00:00', 'Team Meeting', 'Diskutiere Projektupdates', 'Konferenzraum 1', '1,2,3', '2024-04-12 09:00:00', 1, 1, 1, 1),
-('2024-04-06', '2024-04-06 10:00:00', '2024-04-06 11:00:00', 'Kundenbesprechung', 'Überprüfung der Projektanforderungen', 'Konferenzraum 2', '4,5,6', '2024-04-12 09:00:00', 1, 2, 1, 1),
-('2024-04-07', '2024-04-07 14:00:00', '2024-04-07 15:00:00', 'Schulungssitzung', 'Schulung für neue Software', 'Schulungsraum', '7,8,9', '2024-04-12 09:00:00', 2, 3, 2, 1),
-('2024-04-08', '2024-04-08 09:00:00', '2024-04-08 10:00:00', 'Team Brainstorming', 'Ideenfindung für das kommende Projekt', 'Kreativraum', '10,11,12', '2024-04-12 09:00:00', 3, 4, 2, 2),
-('2024-04-09', '2024-04-09 11:00:00', '2024-04-09 12:00:00', 'Vertriebsbesprechung', 'Diskutiere Vertriebsstrategie', 'Vertriebsbüro', '13,14,15', '2024-04-12 09:00:00', 3, 5, 2, 2),
-('2024-04-10', '2024-04-10 15:00:00', '2024-04-10 16:00:00', 'Vorstellungsgespräch', 'Bewerbungsgespräch', 'HR Büro', '16', '2024-04-09 16:00:00', 4, 6, 3, 2),
-('2024-04-11', '2024-04-11 16:00:00', '2024-04-11 17:00:00', 'Produktdemo', 'Demo für potenzielle Kunden', 'Demo Raum', '17,18,19', '2024-04-10 16:00:00', 4, 7, 3, 3),
-('2024-04-12', '2024-04-12 13:00:00', '2024-04-12 14:00:00', 'Projektüberprüfung', 'Überprüfung des aktuellen Projektstatus', 'Projektraum', '20,21,22', '2024-04-11 16:00:00', 5, 8, 4, 3),
-('2024-04-13', '2024-04-13 10:00:00', '2024-04-13 11:00:00', 'Teambildung', 'Teambildungsaktivitäten', 'Erholungsraum', '23,24,25', '2024-04-12 16:00:00', 5, 9, 4, 3),
-('2024-04-14', '2024-04-14 11:00:00', '2024-04-14 12:00:00', 'Kundenmittagessen', 'Lockeres Mittagessen mit Kunden', 'Cafeteria', '26,27,28', '2024-04-13 16:00:00', 6, 10, 5, 4);
+('2024-04-05', '08:00:00', '09:00:00', 'Team Meeting', 'Diskutiere Projektupdates', 'Konferenzraum 1', '1,2,3', '2024-04-12 09:00:00', 1, 1, 1, 1),
+('2024-04-06', '10:00:00', '11:00:00', 'Kundenbesprechung', 'Überprüfung der Projektanforderungen', 'Konferenzraum 2', '4,5,6', '2024-04-12 09:00:00', 1, 2, 1, 1),
+('2024-04-07', '14:00:00', '15:00:00', 'Schulungssitzung', 'Schulung für neue Software', 'Schulungsraum', '7,8,9', '2024-04-12 09:00:00', 2, 3, 2, 1),
+('2024-04-08', '09:00:00', '10:00:00', 'Team Brainstorming', 'Ideenfindung für das kommende Projekt', 'Kreativraum', '10,11,12', '2024-04-12 09:00:00', 3, 4, 2, 2),
+('2024-04-09', '11:00:00', '12:00:00', 'Vertriebsbesprechung', 'Diskutiere Vertriebsstrategie', 'Vertriebsbüro', '13,14,15', '2024-04-12 09:00:00', 3, 5, 2, 2),
+('2024-04-10', '15:00:00', '16:00:00', 'Vorstellungsgespräch', 'Bewerbungsgespräch', 'HR Büro', '16', '2024-04-09 16:00:00', 4, 6, 3, 2),
+('2024-04-11', '16:00:00', '17:00:00', 'Produktdemo', 'Demo für potenzielle Kunden', 'Demo Raum', '17,18,19', '2024-04-10 16:00:00', 4, 7, 3, 3),
+('2024-04-12', '13:00:00', '14:00:00', 'Projektüberprüfung', 'Überprüfung des aktuellen Projektstatus', 'Projektraum', '20,21,22', '2024-04-11 16:00:00', 5, 8, 4, 3),
+('2024-04-13', '10:00:00', '11:00:00', 'Teambildung', 'Teambildungsaktivitäten', 'Erholungsraum', '23,24,25', '2024-04-12 16:00:00', 5, 9, 4, 3),
+('2024-04-14', '11:00:00', '12:00:00', 'Kundenmittagessen', 'Lockeres Mittagessen mit Kunden', 'Cafeteria', '26,27,28', '2024-04-13 16:00:00', 6, 10, 5, 4);
 
 INSERT INTO USERS (email, password, sync_status)
 VALUES

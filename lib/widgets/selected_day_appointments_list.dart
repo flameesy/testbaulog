@@ -59,7 +59,7 @@ class SelectedDayAppointmentsList extends StatelessWidget {
                 children: [
                   const SizedBox(height: 8),
                   Text(
-                    'Startzeit: ${appointment['start_time'] != null ? DateFormat('HH:mm').format(DateTime.parse(appointment['start_time'])) : 'Keine Startzeit verfügbar'} | Endzeit: ${appointment['end_time'] != null ? DateFormat('HH:mm').format(DateTime.parse(appointment['end_time'])) : 'Keine Endzeit verfügbar'}',
+                    'Startzeit: ${appointment['start_time'] != null ? formatTime(appointment['start_time']) : 'Keine Startzeit verfügbar'} | Endzeit: ${appointment['end_time'] != null ? formatTime(appointment['end_time']) : 'Keine Endzeit verfügbar'}',
                     style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 8),
@@ -101,3 +101,31 @@ class SelectedDayAppointmentsList extends StatelessWidget {
     );
   }
 }
+
+String formatTime(dynamic time) {
+  if (time == null) {
+    return 'Keine Zeit verfügbar';
+  }
+
+  if (time is DateTime) {
+    return DateFormat('HH:mm').format(time);
+  } else if (time is String) {
+    List<String> timeParts = time.split(':');
+    if (timeParts.length < 2) {
+      return 'Ungültige Zeit';
+    }
+
+    int? hours = int.tryParse(timeParts[0]);
+    int? minutes = int.tryParse(timeParts[1]);
+
+    if (hours == null || minutes == null) {
+      return time;
+    }
+
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+  }
+
+  return 'Ungültiges Format';
+}
+
+

@@ -106,6 +106,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             height: 420.0,
             selectedDateTime: _selectedDay,
             daysHaveCircularBorder: true,
+            locale: 'de', // Setzen der Lokalisierung auf Deutsch
             customDayBuilder: (
                 bool isSelectable,
                 int index,
@@ -118,7 +119,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                 DateTime day,
                 ) {
               bool hasAppointments = _appointmentsByDate.containsKey(day);
-              Color dayColor = isToday ? textStyle.decorationColor! : textStyle.color!;
+              Color dayColor = isToday && !isSelectedDay ? Colors.orange : textStyle.color!;
               return Container(
                 decoration: BoxDecoration(
                   color: null,
@@ -130,7 +131,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                     Center(
                       child: Text(
                         '${day.day}',
-                        style: textStyle.copyWith(color: dayColor), // Setzen Sie die Farbe entsprechend dem Typ des Tages
+                        style: textStyle.copyWith(color: dayColor),
                       ),
                     ),
                     if (hasAppointments)
@@ -163,7 +164,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             child: SelectedDayAppointmentsList(
               appointments: _getEventsForDay(_selectedDay),
               fetchAppointments: fetchAppointments,
-              navigateToAppointmentDetailPage: navigateToAppointmentDetailPage, // Hier übergeben wir die Funktion
+              navigateToAppointmentDetailPage: navigateToAppointmentDetailPage,
               appointmentsByDate: _appointmentsByDate,
               databaseHelper: _databaseHelper,
             ),
@@ -172,14 +173,12 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Navigieren Sie zur Appointment-Detailseite und warten Sie auf das Ergebnis
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => AppointmentDetailPage(appointment: const {}, databaseHelper: _databaseHelper),
             ),
           );
-          // Wenn ein Ergebnis zurückgegeben wurde, aktualisieren Sie die Termindaten
           if (result != null) {
             fetchAppointments();
           }
@@ -188,6 +187,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       ),
     );
   }
+
 
   List<Map<String, dynamic>> _getEventsForDay(DateTime day) {
     List<Map<String, dynamic>> eventsList = [];

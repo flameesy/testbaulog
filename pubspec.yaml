@@ -54,6 +54,7 @@ dependencies:
   url_launcher: ^6.0.13
   file_picker: ^4.0.0
   image_picker: ^0.8.4+4
+  calendar_view: ^1.1.0
 
   sqflite_common: any
 dev_dependencies:

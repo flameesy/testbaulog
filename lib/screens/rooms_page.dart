@@ -68,8 +68,8 @@ class _RoomsPageState extends State<RoomsPage> {
     try {
       final List<Map<String, dynamic>> appointments = await dbHelper.fetchItemsWithWhere(
           'APPOINTMENT',
-          'room_id = ? AND done = ?',
-          [roomId, 0]); // Assuming done=1 means the appointment is done
+          'room_id = ? AND done <> ?',
+          [roomId, 1]); // Assuming done=1 means the appointment is done
       return appointments.length;
     } catch (e) {
       print('Error counting appointments: $e');
