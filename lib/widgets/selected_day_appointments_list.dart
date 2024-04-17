@@ -69,7 +69,7 @@ class SelectedDayAppointmentsList extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'ID: ${appointment['id'] ?? 'Keine ID verfügbar'}',
+                    'Datum: ${_formatDate(appointment['appointment_date']) ?? 'Kein Datum verfügbar'}',
                     style: const TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 8),
@@ -128,4 +128,25 @@ String formatTime(dynamic time) {
   return 'Ungültiges Format';
 }
 
+
+String _formatDate(dynamic date) {
+  if (date == null) {
+    return DateFormat('dd.MM.yyyy').format(DateTime.now());
+  } else if (date is String) {
+    // Wenn date ein String ist, versuchen wir ihn in ein DateTime-Objekt umzuwandeln
+    try {
+      final parsedDate = DateTime.parse(date);
+      return DateFormat('dd.MM.yyyy').format(parsedDate);
+    } catch (e) {
+      // Fehler beim Parsen des Datums, geben Sie das aktuelle Datum zurück
+      return DateFormat('dd.MM.yyyy').format(DateTime.now());
+    }
+  } else if (date is DateTime) {
+    // Wenn date bereits ein DateTime-Objekt ist, formatieren wir es direkt
+    return DateFormat('dd.MM.yyyy').format(date);
+  } else {
+    // Für alle anderen Fälle geben wir das aktuelle Datum zurück
+    return DateFormat('dd.MM.yyyy').format(DateTime.now());
+  }
+}
 
