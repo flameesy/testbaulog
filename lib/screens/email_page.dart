@@ -175,12 +175,6 @@ class _EmailPageState extends State<EmailPage> {
               ),
 
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: const Text('Pick Image'), // Neu hinzugefügt
-              ),
-
-              const SizedBox(height: 20),
               TextFormField(
                 controller: _recipientController,
                 decoration: const InputDecoration(
@@ -217,13 +211,13 @@ class _EmailPageState extends State<EmailPage> {
               TextFormField(
                 controller: _subjectController,
                 decoration: const InputDecoration(
-                  labelText: 'Subject:',
+                  labelText: 'Betreff:',
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.all(12.0),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter email subject';
+                    return 'Bitte Betreff eingeben';
                   }
                   return null;
                 },

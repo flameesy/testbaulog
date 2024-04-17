@@ -244,7 +244,8 @@ class _RoomsPageState extends State<RoomsPage> {
               return AddRoomDialog(database: widget.database);
             },
           );
-          // Aktualisiere die Raumliste
+
+          // Aktualisiere die Raumliste, nachdem der Dialog geschlossen wurde
           fetchRooms();
         },
         child: const Icon(Icons.add),

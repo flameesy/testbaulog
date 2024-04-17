@@ -44,7 +44,6 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
       setState(() {
         _appointments = appointments;
       });
-      dbHelper.printAppointmentTableSchema();
     } catch (e) {
       print('Error fetching appointments: $e');
     }
@@ -86,11 +85,6 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
               controller: _accessController,
               decoration: const InputDecoration(labelText: 'Access'),
             ),
-            const SizedBox(height: 10),
-            TextFormField(
-              controller: _syncStatusController,
-              decoration: const InputDecoration(labelText: 'Sync Status'),
-            ),
             const SizedBox(height: 20),
             const Text(
               'Termine für den ausgewählten Raum:',
@@ -111,6 +105,7 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _updateRoom();
+          fetchAppointments();
           Navigator.pop(context);
         },
         child: const Icon(Icons.save),

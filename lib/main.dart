@@ -10,6 +10,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart'
 if (dart.library.html) 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:testbaulog/screens/email_templates_page.dart';
+import 'package:testbaulog/screens/export_import_page.dart';
 
 import 'helpers/database_helper.dart';
 import 'screens/appointments_page.dart';
@@ -56,8 +57,8 @@ Future<Database> initializeDatabase() async {
 
   DatabaseHelper databaseHelper = DatabaseHelper(database: database);
   await databaseHelper.createTablesIfNotExists();
-  await databaseHelper.insertUser('l', 'l');
-  await printEmailTemplates(databaseHelper);
+  await databaseHelper.insertUser('admin', 'admin');
+  //await printEmailTemplates(databaseHelper);
   return database;
 }
 
@@ -90,7 +91,7 @@ class MyApp extends StatelessWidget {
         '/termine': (context) => AppWrapper(child: AppointmentsPage(database: database)),
         '/rooms': (context) => AppWrapper(child: RoomsPage(database: database)),
         '/order': (context) => AppWrapper(child: OrderPage(database: database)),
-        '/einstellungen': (context) => AppWrapper(child: SettingsPage(database: database)),
+        '/einstellungen': (context) => AppWrapper(child: ExportImportPage(database: database)),
       },
       theme: BauLogTheme.getTheme(),
     );

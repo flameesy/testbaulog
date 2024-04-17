@@ -29,8 +29,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     print('Appointment Date: ${widget.appointment['appointment_date']}');
     _textEditingController = TextEditingController(text: widget.appointment['text'] ?? '');
     _dateEditingController = TextEditingController(text: _formatDate(widget.appointment['appointment_date']));
-    _startTimeEditingController = TextEditingController(text: _formatTime(widget.appointment['start_time']));
-    _endTimeEditingController = TextEditingController(text: _formatTime(widget.appointment['end_time']));
+    _startTimeEditingController = TextEditingController(text: (widget.appointment['start_time']));
+    _endTimeEditingController = TextEditingController(text: (widget.appointment['end_time']));
     _descriptionEditingController = TextEditingController(text: widget.appointment['description'] ?? '');
     _participantIdsEditingController = TextEditingController(text: widget.appointment['participant_ids'] ?? '');
     _platformIdEditingController = TextEditingController(text: widget.appointment['platform_id']?.toString() ?? '');
