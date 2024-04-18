@@ -1,12 +1,16 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../helpers/database_helper.dart';
 
+
 class AppointmentDetailPage extends StatefulWidget {
   final Map<String, dynamic> appointment;
+
   final DatabaseHelper databaseHelper;
 
-  const AppointmentDetailPage({Key? key, required this.appointment, required this.databaseHelper}) : super(key: key);
+  const AppointmentDetailPage({super.key, required this.appointment, required this.databaseHelper});
 
   @override
   _AppointmentDetailPageState createState() => _AppointmentDetailPageState();
@@ -22,11 +26,14 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
   late TextEditingController _platformIdEditingController;
   late TextEditingController _roomIdEditingController;
   late TextEditingController _buildingIdEditingController;
+  late PlatformFile _selectedFile;
+  List<PlatformFile> _attachmentFiles = [];
 
   @override
   void initState() {
     super.initState();
-    print('Appointment Date: ${widget.appointment['appointment_date']}');
+    _selectedFile = PlatformFile(name: '', size: 0); // Initialisierung von _selectedFile
+    _getAttachmentFiles();
     _textEditingController = TextEditingController(text: widget.appointment['text'] ?? '');
     _dateEditingController = TextEditingController(text: _formatDate(widget.appointment['appointment_date']));
     _startTimeEditingController = TextEditingController(text: (widget.appointment['start_time']));
@@ -168,6 +175,13 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                onPressed: _attachFile,
+                child: Text('Datei anhängen'),
+              ),
+              const SizedBox(height: 20),
+              _buildAttachmentList(),
+              const SizedBox(height: 20),
+              ElevatedButton(
                 onPressed: _saveAppointment,
                 child: const Text('Speichern'),
               ),
@@ -252,6 +266,53 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
     final now = DateTime.now();
     final dt = DateTime(now.year, now.month, now.day, timeOfDay.hour, timeOfDay.minute);
     return DateFormat.Hm().format(dt);
+  }
+
+  Future<void> _attachFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+    if (result != null && result.files.isNotEmpty) { // Überprüfen, ob eine Datei ausgewählt wurde
+      setState(() {
+        // Das ausgewählte File aus dem Resultat extrahieren
+        _selectedFile = result.files.single;
+      });
+      await _saveAttachmentInDatabase(result.files.single);
+    }
+  }
+
+  Future<void> _getAttachmentFiles() async {
+    int appointmentId = widget.appointment['id'];
+    List<PlatformFile> files = await widget.databaseHelper.getFilesForAppointment(appointmentId);
+    setState(() {
+      _attachmentFiles = files;
+    });
+  }
+
+  Widget _buildAttachmentList() {
+    if (_attachmentFiles.isEmpty) {
+      return const Text('Keine Dateien angehängt');
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: _attachmentFiles.map((file) {
+          return Text(file.name);
+        }).toList(),
+      );
+    }
+  }
+
+  Future<void> _saveAttachmentInDatabase(PlatformFile file) async {
+    int appointmentId = widget.appointment['id'];
+    try {
+      await widget.databaseHelper.saveAttachmentForAppointment(appointmentId, file);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Datei erfolgreich angehängt!'),
+      ));
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Fehler beim Speichern der Datei: $error'),
+      ));
+    }
   }
 
   void _saveAppointment() {

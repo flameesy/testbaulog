@@ -16,7 +16,7 @@ class CustomAppDrawer extends StatelessWidget {
             child: Row(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
+                  padding: const EdgeInsets.only(right: 10.0),
                   child: Image.asset(
                     'assets/logo.png', // Pfad zum Bild
                     height: 32, // Festlegen der Höhe des Bildes
@@ -58,7 +58,7 @@ class CustomAppDrawer extends StatelessWidget {
           ),
           _buildMenuItem(
             context,
-            icon: Icons.email,
+            icon: Icons.subject,
             title: 'Email-Templates',
             onTap: () {
               _navigateTo(context, '/templates');
@@ -66,22 +66,15 @@ class CustomAppDrawer extends StatelessWidget {
           ),
           _buildMenuItem(
             context,
-            icon: Icons.room,
+            icon: Icons.business,
             title: 'Räume',
             onTap: () {
               _navigateTo(context, '/rooms');
             },
-          ),
-          _buildMenuItem(
+          )
+          ,_buildMenuItem(
             context,
-            icon: Icons.map,
-            title: 'Karten',
-            onTap: () {
-              _navigateTo(context, '/karten');
-            },
-          ),_buildMenuItem(
-            context,
-            icon: Icons.map,
+            icon: Icons.reorder,
             title: 'Bestellung',
             onTap: () {
               _navigateTo(context, '/order');
@@ -89,15 +82,15 @@ class CustomAppDrawer extends StatelessWidget {
           ),
           _buildMenuItem(
             context,
-            icon: Icons.settings,
-            title: 'Einstellungen',
+            icon: Icons.import_export,
+            title: 'Export',
             onTap: () {
               _navigateTo(context, '/einstellungen');
             },
           ),
           _buildMenuItem(
             context,
-            icon: Icons.map,
+            icon: Icons.logout,
             title: 'Logout',
             onTap: () {
               _navigateTo(context, '/login');

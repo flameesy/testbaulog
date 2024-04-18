@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:bcrypt/bcrypt.dart';
@@ -185,7 +186,21 @@ class DatabaseHelper {
       required INTEGER DEFAULT 0,
       format TEXT
     )
-  '''
+  ''',
+      'ATTACHMENT': '''
+    CREATE TABLE IF NOT EXISTS ATTACHMENT (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      appointment_id INTEGER,
+      room_id INTEGER,
+      email_id INTEGER,
+      file_path TEXT NOT NULL,
+      file_type TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (appointment_id) REFERENCES APPOINTMENT(id) ON DELETE CASCADE,
+      FOREIGN KEY (room_id) REFERENCES ROOM(id) ON DELETE CASCADE,
+      FOREIGN KEY (email_id) REFERENCES EMAIL(id) ON DELETE CASCADE
+    )
+  ''',
     };
 
 
@@ -550,4 +565,38 @@ class DatabaseHelper {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
+  Future<List<PlatformFile>> getFilesForAppointment(int appointmentId) async {
+    final List<Map<String, dynamic>> maps = await database.query(
+      'attachments',
+      where: 'appointment_id = ?',
+      whereArgs: [appointmentId],
+    );
+
+    return List.generate(maps.length, (i) {
+      return PlatformFile(
+        path: maps[i]['path'],
+        name: maps[i]['name'],
+        size: maps[i]['size'],
+        bytes: maps[i]['bytes'],
+        identifier: maps[i]['identifier'],
+      );
+    });
+  }
+
+  Future<void> saveAttachmentForAppointment(int appointmentId, PlatformFile file) async {
+    await database.insert(
+      'attachments',
+      {
+        'appointment_id': appointmentId,
+        'path': file.path,
+        'name': file.name,
+        'size': file.size,
+        'bytes': file.bytes,
+        'identifier': file.identifier,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
 }

@@ -3,14 +3,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'dart:io';
 import 'package:csv/csv.dart';
-import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ExportImportPage extends StatefulWidget {
   final Database database;
 
-  ExportImportPage({required this.database});
+  const ExportImportPage({super.key, required this.database});
 
   @override
   _ExportImportPageState createState() => _ExportImportPageState();
@@ -68,11 +67,11 @@ class _ExportImportPageState extends State<ExportImportPage> {
       File file = File('$dir/$_selectedTable.csv');
       print('$dir/$_selectedTable.csv');
       await file.writeAsString(csv);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Data exported successfully'),
       ));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Please select a table to export'),
       ));
     }
@@ -83,7 +82,7 @@ class _ExportImportPageState extends State<ExportImportPage> {
       PlatformFile file = result.files.first;
       File pickedFile = File(file.path!);
       String csvString = await pickedFile.readAsString();
-      List<List<dynamic>> csvData = CsvToListConverter().convert(csvString);
+      List<List<dynamic>> csvData = const CsvToListConverter().convert(csvString);
       List<String> headerRow = csvData[0].map((e) => e.toString()).toList();
       // Assuming first row is the header
       // Map CSV columns to database columns
@@ -103,7 +102,7 @@ class _ExportImportPageState extends State<ExportImportPage> {
         }
         await widget.database.insert(_selectedTable!, mappedRow);
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Data imported successfully'),
       ));
     }
@@ -113,20 +112,20 @@ class _ExportImportPageState extends State<ExportImportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Export / Import Data'),
+        title: const Text('Export / Import Data'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
+            const Text(
               'Export Data:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             DropdownButton<String>(
               value: _selectedTable,
-              hint: Text('Select a table'),
+              hint: const Text('Select a table'),
               onChanged: (value) {
                 setState(() {
                   _selectedTable = value;
@@ -141,10 +140,10 @@ class _ExportImportPageState extends State<ExportImportPage> {
             ),
             ElevatedButton(
               onPressed: _exportData,
-              child: Text('Export'),
+              child: const Text('Export'),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Import Data:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -156,7 +155,7 @@ class _ExportImportPageState extends State<ExportImportPage> {
                 );
                 _importData(result);
               },
-              child: Text('Select CSV File'),
+              child: const Text('Select CSV File'),
             ),
           ],
         ),

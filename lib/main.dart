@@ -19,7 +19,6 @@ import 'screens/home_page.dart';
 import 'screens/login_page.dart';
 import 'screens/order_page.dart';
 import 'screens/rooms_page.dart';
-import 'screens/settings_page.dart';
 import 'theme/baulog_theme.dart';
 
 void main() async {
@@ -57,8 +56,8 @@ Future<Database> initializeDatabase() async {
 
   DatabaseHelper databaseHelper = DatabaseHelper(database: database);
   await databaseHelper.createTablesIfNotExists();
-  await databaseHelper.insertUser('admin', 'admin');
   //await printEmailTemplates(databaseHelper);
+  await databaseHelper.insertUser('i', 'i');
   return database;
 }
 
