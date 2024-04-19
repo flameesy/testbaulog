@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sqflite_common/sqlite_api.dart';
@@ -9,7 +9,7 @@ import '../helpers/database_helper.dart';
 class EmailPage extends StatefulWidget {
   final Database database;
 
-  const EmailPage({Key? key, required this.database}) : super(key: key);
+  const EmailPage({super.key, required this.database});
 
   @override
   _EmailPageState createState() => _EmailPageState();
@@ -25,7 +25,7 @@ class _EmailPageState extends State<EmailPage> {
   final _bccController = TextEditingController();
   final _subjectController = TextEditingController();
   final _bodyController = TextEditingController();
-  XFile? _imageFile;
+  XFile? _imageFile; // Neu hinzugefügt
 
   @override
   void initState() {
@@ -78,7 +78,7 @@ class _EmailPageState extends State<EmailPage> {
         final String emailUriString =
             'mailto:$recipient?cc=$cc&bcc=$bcc&subject=$subject&body=$body';
 
-        // Open email app with HTML-formatted email
+        // Öffnen der E-Mail-App mit der HTML-formatierten E-Mail
         await launchUrl(Uri.parse(emailUriString));
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -93,30 +93,35 @@ class _EmailPageState extends State<EmailPage> {
     }
   }
 
+  // Methode zum Laden des Bilds
+  Future<void> _loadImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = pickedFile;
+      });
+    }
+  }
+
+// Methode zum Einbetten des Bilds in den E-Mail-Body
   Future<String> _embedImage() async {
     if (_imageFile != null) {
       final bytes = await _imageFile!.readAsBytes();
       final String base64Image = base64Encode(bytes);
       return 'data:image/png;base64,$base64Image';
     } else {
-      return ''; // Return empty string if no image is selected
+      return ''; // Falls kein Bild ausgewählt wurde
     }
   }
 
+// Methode zum Ersetzen der Platzhalter und Einbetten des Bilds
   String _replacePlaceholders(String body) {
-    // Replace placeholders in the template with actual values
+    // Hier ersetzen Sie die Platzhalter in der Vorlage durch die entsprechenden Werte
     body = body.replaceAll('ORDER_ID', '55432');
-
-    // HTML format for the image and signature
-    final String imageHtml = '<img src="${_embedImage()}" alt="User Image">';
-    const String signatureHtml =
-        'Best regards, <a href="https://example.com">User</a>';
-
-    // Add the image and signature to the email body
-    body += '<br><br>$imageHtml<br><br>$signatureHtml';
-
     return body;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +143,7 @@ class _EmailPageState extends State<EmailPage> {
                 value: _selectedTemplateId,
                 items: [
                   const DropdownMenuItem<int>(
-                    value: null, // Set default value to null
+                    value: null, // Standardwert auf null setzen
                     child: Text('Select Email Template'),
                   ),
                   ..._emailTemplates.map<DropdownMenuItem<int>>(
@@ -159,6 +164,7 @@ class _EmailPageState extends State<EmailPage> {
                   contentPadding: EdgeInsets.all(12.0),
                 ),
               ),
+
               const SizedBox(height: 20),
               TextFormField(
                 controller: _recipientController,
@@ -196,13 +202,13 @@ class _EmailPageState extends State<EmailPage> {
               TextFormField(
                 controller: _subjectController,
                 decoration: const InputDecoration(
-                  labelText: 'Subject:',
+                  labelText: 'Betreff:',
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.all(12.0),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter subject';
+                    return 'Bitte Betreff eingeben';
                   }
                   return null;
                 },
@@ -214,7 +220,7 @@ class _EmailPageState extends State<EmailPage> {
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
                 decoration: const InputDecoration(
-                  labelText: 'Body:',
+                  labelText: 'Text:',
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.all(12.0),
                 ),

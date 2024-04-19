@@ -56,12 +56,12 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
         title: Text(widget.room['name']),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Room Details:',
+              'Raum Details:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
@@ -73,7 +73,7 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
             const SizedBox(height: 10),
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Room Name'),
+              decoration: const InputDecoration(labelText: 'Raumname'),
             ),
             const SizedBox(height: 10),
             TextFormField(
@@ -83,7 +83,7 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
             const SizedBox(height: 10),
             TextFormField(
               controller: _accessController,
-              decoration: const InputDecoration(labelText: 'Access'),
+              decoration: const InputDecoration(labelText: 'Zugang'),
             ),
             const SizedBox(height: 20),
             const Text(
