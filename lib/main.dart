@@ -57,7 +57,8 @@ Future<Database> initializeDatabase() async {
   DatabaseHelper databaseHelper = DatabaseHelper(database: database);
   await databaseHelper.createTablesIfNotExists();
   //await printEmailTemplates(databaseHelper);
-  await databaseHelper.insertUser('i', 'i');
+  await databaseHelper.insertUser('demo', '123');
+  await databaseHelper.insertUser('oli', 'passwort');
   return database;
 }
 
@@ -106,11 +107,10 @@ class AppWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        bottom: true,
         child: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height - kToolbarHeight,
+              maxHeight: MediaQuery.of(context).size.height - 24,
             ),
             child: child,
           ),

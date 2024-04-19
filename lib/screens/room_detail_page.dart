@@ -56,7 +56,7 @@ class _RoomDetailPageState extends State<RoomDetailPage> {
         title: Text(widget.room['name']),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

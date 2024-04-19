@@ -5,7 +5,7 @@ import '../helpers/database_helper.dart';
 class AddRoomDialog extends StatefulWidget {
   final Database database;
 
-  const AddRoomDialog({Key? key, required this.database}) : super(key: key);
+  const AddRoomDialog({super.key, required this.database});
 
   @override
   _AddRoomDialogState createState() => _AddRoomDialogState();

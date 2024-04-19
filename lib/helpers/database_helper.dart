@@ -35,6 +35,7 @@ class DatabaseHelper {
       level_id INTEGER,
       DONE INTEGER DEFAULT 0,
       sync_status INTEGER DEFAULT 0, 
+      attachment_id TEXT,
       UNIQUE (building_id, level_id, room_id),
       FOREIGN KEY (platform_id) REFERENCES PLATFORM(id),
       FOREIGN KEY (room_id) REFERENCES ROOM(id),
@@ -99,7 +100,9 @@ class DatabaseHelper {
       name TEXT NOT NULL,
       building_id INTEGER NOT NULL,
       room_count INTEGER,
-      sync_status INTEGER DEFAULT 0, 
+      sync_status INTEGER DEFAULT 0,
+      attachment_id TEXT,
+      description TEXT, 
       FOREIGN KEY (building_id) REFERENCES BUILDING(id) ON DELETE CASCADE
     )
   ''',
@@ -110,6 +113,8 @@ class DatabaseHelper {
       level_id INTEGER NOT NULL,
       access INTEGER NOT NULL,
       sync_status INTEGER DEFAULT 0, 
+      description TEXT,
+      attachment_id TEXT,
       FOREIGN KEY (level_id) REFERENCES LEVEL(id) ON DELETE CASCADE
     )
   ''',
@@ -193,6 +198,7 @@ class DatabaseHelper {
       appointment_id INTEGER,
       room_id INTEGER,
       email_id INTEGER,
+      name TEXT,
       file_path TEXT NOT NULL,
       file_type TEXT NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

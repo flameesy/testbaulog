@@ -1,5 +1,4 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../helpers/database_helper.dart';
@@ -59,14 +58,6 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Termin Details:',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
               if (widget.appointment['id'] != null) ...[
                 // Display ID if available
                 Text(
@@ -176,13 +167,13 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
               ),
               const SizedBox(height: 20),
               _buildAttachmentList(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ElevatedButton(
                     onPressed: _attachFile,
-                    child: Text('Datei anhängen'),
+                    child: const Text('Datei anhängen'),
                   ),
                   const SizedBox(height: 20),
                   Row(
@@ -315,10 +306,10 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           List<String> pathParts = file.name.split('/');
           String fileName = pathParts.last;
           return ListTile(
-            leading: Icon(Icons.attach_file),
+            leading: const Icon(Icons.attach_file),
             title: Text(fileName),
             trailing: IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 _showDeleteConfirmationDialog(file); // Zeige Dialog zum Löschen an
               },
@@ -347,8 +338,8 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Anhang löschen'),
-          content: SingleChildScrollView(
+          title: const Text('Anhang löschen'),
+          content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 Text('Möchtest du diesen Anhang wirklich löschen?'),
@@ -357,13 +348,13 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Abbrechen'),
+              child: const Text('Abbrechen'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('Löschen'),
+              child: const Text('Löschen'),
               onPressed: () {
                 Navigator.of(context).pop(); // Schließe Dialog
                 _deleteAttachment(file); // Lösche den Anhang
