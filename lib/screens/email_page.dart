@@ -118,7 +118,8 @@ class _EmailPageState extends State<EmailPage> {
 // Methode zum Ersetzen der Platzhalter und Einbetten des Bilds
   String _replacePlaceholders(String body) {
     // Hier ersetzen Sie die Platzhalter in der Vorlage durch die entsprechenden Werte
-    body = body.replaceAll('ORDER_ID', '55432');
+    body = body.replaceAll('[ORDER_ID]', '55432');
+    body = body.replaceAll('[CHEF]', 'Oli');
     return body;
   }
 

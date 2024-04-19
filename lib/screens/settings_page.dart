@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common/sqlite_api.dart';
@@ -88,11 +89,114 @@ class _SettingsPageState extends State<SettingsPage> {
               },
               child: const Text('Export to CSV'),
             ),
+            const SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () async {
+                // Export all tables to CSV
+                await _exportAllToCSV();
+              },
+              child: const Text('Export All to CSV'),
+            ),
+            const SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: () async {
+                // Trigger import process
+                await _importFromCSV();
+              },
+              child: const Text('Import from CSV'),
+            ),
           ],
         ),
       ),
     );
   }
+
+  Future<void> _exportAllToCSV() async {
+    try {
+      // Get export path
+      _exportPath = await _getExportPath();
+
+      if (_exportPath.isNotEmpty) {
+        // Get all table names
+        final List<String> tableNames = await widget.database
+            .query('sqlite_master', where: 'type = ?', whereArgs: ['table'])
+            .then((tables) =>
+            tables.map<String>((table) => table['name'] as String).toList());
+
+        // Export each table to CSV
+        for (final tableName in tableNames) {
+          final exportCSV = ExportCSV(tableName, widget.database);
+          await exportCSV.exportTableToCSV(_exportPath, widget.database);
+        }
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('All tables exported successfully'),
+          ),
+        );
+      } else {
+        // Show error message if export path is empty
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Export path is empty'),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error exporting database: $e');
+      // Handle error if needed
+    }
+  }
+
+  Future<void> _importFromCSV() async {
+    try {
+      // Select CSV file
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['csv'],
+      );
+
+      if (result != null) {
+        // Get selected CSV file
+        final File file = File(result.files.single.path!);
+
+        // Read CSV file and import data into database
+        final List<String> lines = await file.readAsLines();
+        for (final line in lines) {
+          // Parse CSV line and insert data into database tables
+          final List<String> values = line.split(','); // Adjust delimiter if needed
+
+          // Example: Assuming the CSV file has the same number of columns as the database table
+          // Insert data into database tables using SQL INSERT statements
+          // Assuming you have a table named 'your_table_name' with columns (column1, column2, ...)
+          // You can adjust this part based on your actual database schema
+          await widget.database.rawInsert(
+            'INSERT INTO your_table_name (column1, column2, ...) VALUES (?, ?, ...)',
+            values,
+          );
+        }
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Import successful'),
+          ),
+        );
+      } else {
+        // Show error message if no file selected
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No file selected for import'),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error importing data: $e');
+      // Handle error if needed
+    }
+  }
+
 
   void _saveSettings() {
     // Save settings to JSON file

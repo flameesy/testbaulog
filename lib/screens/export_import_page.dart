@@ -9,7 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 class ExportImportPage extends StatefulWidget {
   final Database database;
 
-  const ExportImportPage({super.key, required this.database});
+  const ExportImportPage({Key? key, required this.database}) : super(key: key);
 
   @override
   _ExportImportPageState createState() => _ExportImportPageState();
@@ -29,19 +29,14 @@ class _ExportImportPageState extends State<ExportImportPage> {
   Future<void> _requestPermission() async {
     final permissionStatus = await Permission.storage.status;
     if (permissionStatus.isDenied) {
-      // Here just ask for the permission for the first time
       await Permission.storage.request();
-
-      // I noticed that sometimes popup won't show after user press deny
-      // so I do the check once again but now go straight to appSettings
       if (permissionStatus.isDenied) {
-
+        // Handle denied permission
       }
     } else if (permissionStatus.isPermanentlyDenied) {
-      // Here open app settings for user to manually enable permission in case
-      // where permission was permanently denied
+      // Handle permanently denied permission
     } else {
-      // Do stuff that require permission here
+      // Permission granted, proceed with operations
     }
   }
 
@@ -53,10 +48,10 @@ class _ExportImportPageState extends State<ExportImportPage> {
     });
   }
 
-  Future<void> _exportData() async {
-    if (_selectedTable != null) {
+  Future<void> _exportData(String? tableName) async {
+    if (tableName != null) {
       List<Map<String, dynamic>> data =
-      await widget.database.rawQuery("SELECT * FROM $_selectedTable");
+      await widget.database.rawQuery("SELECT * FROM $tableName");
       List<List<dynamic>> csvData = [];
       csvData.add(data[0].keys.toList()); // Header
       for (var row in data) {
@@ -64,8 +59,7 @@ class _ExportImportPageState extends State<ExportImportPage> {
       }
       String csv = const ListToCsvConverter().convert(csvData);
       String dir = (await getExternalStorageDirectory())!.path;
-      File file = File('$dir/$_selectedTable.csv');
-      print('$dir/$_selectedTable.csv');
+      File file = File('$dir/$tableName.csv');
       await file.writeAsString(csv);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Data exported successfully'),
@@ -77,36 +71,89 @@ class _ExportImportPageState extends State<ExportImportPage> {
     }
   }
 
+  Future<void> _exportAllData() async {
+    for (String tableName in _tables) {
+      List<Map<String, dynamic>> data =
+      await widget.database.rawQuery("SELECT * FROM $tableName");
+      if (data.isNotEmpty) { // Check if data is not empty
+        List<List<dynamic>> csvData = [];
+        csvData.add(data[0].keys.toList()); // Header
+        for (var row in data) {
+          csvData.add(row.values.toList());
+        }
+        String csv = const ListToCsvConverter().convert(csvData);
+        String dir = (await getExternalStorageDirectory())!.path;
+        File file = File('$dir/$tableName.csv');
+        await file.writeAsString(csv);
+      }
+    }
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('All tables exported successfully'),
+    ));
+  }
+
+
   Future<void> _importData(FilePickerResult? result) async {
     if (result != null && result.files.isNotEmpty) {
       PlatformFile file = result.files.first;
       File pickedFile = File(file.path!);
       String csvString = await pickedFile.readAsString();
       List<List<dynamic>> csvData = const CsvToListConverter().convert(csvString);
-      List<String> headerRow = csvData[0].map((e) => e.toString()).toList();
-      // Assuming first row is the header
-      // Map CSV columns to database columns
-      // You might need to implement a UI for this step
-      Map<String, String> columnMapping = {};
-      for (var column in headerRow) {
-        // You can prompt the user to map each CSV column to a database column
-        // For simplicity, I'm just assuming they are the same
-        columnMapping[column] = column;
-      }
-      // Insert data into database based on mapping
-      for (var i = 1; i < csvData.length; i++) {
-        List<dynamic> row = csvData[i];
-        Map<String, dynamic> mappedRow = {};
-        for (var j = 0; j < row.length; j++) {
-          mappedRow[columnMapping[headerRow[j]]!] = row[j];
+
+      // Step 1: Let the user select the table to import into
+      String? selectedTable = await showDialog<String>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Select table to import into'),
+          content: DropdownButton<String>(
+            value: _selectedTable,
+            hint: Text('Select a table'),
+            onChanged: (value) {
+              setState(() {
+                _selectedTable = value;
+              });
+              Navigator.of(context).pop(value);
+            },
+            items: _tables.map((table) {
+              return DropdownMenuItem<String>(
+                value: table,
+                child: Text(table),
+              );
+            }).toList(),
+          ),
+        ),
+      );
+
+      if (selectedTable != null) {
+        List<String> headerRow = csvData[0].map((e) => e.toString()).toList();
+        // Assuming first row is the header
+        // Map CSV columns to database columns
+        Map<String, String> columnMapping = {};
+        for (var column in headerRow) {
+          // You can prompt the user to map each CSV column to a database column
+          // For simplicity, I'm just assuming they are the same
+          columnMapping[column] = column;
         }
-        await widget.database.insert(_selectedTable!, mappedRow);
+        // Insert data into database based on mapping
+        for (var i = 1; i < csvData.length; i++) {
+          List<dynamic> row = csvData[i];
+          Map<String, dynamic> mappedRow = {};
+          for (var j = 0; j < row.length; j++) {
+            mappedRow[columnMapping[headerRow[j]]!] = row[j];
+          }
+          await widget.database.insert(selectedTable, mappedRow); // Step 3: Insert into selected table
+        }
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Data imported successfully'),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Please select a table to import into'),
+        ));
       }
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Data imported successfully'),
-      ));
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -119,10 +166,11 @@ class _ExportImportPageState extends State<ExportImportPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Export Data:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 10),
             DropdownButton<String>(
               value: _selectedTable,
               hint: const Text('Select a table'),
@@ -138,15 +186,22 @@ class _ExportImportPageState extends State<ExportImportPage> {
                 );
               }).toList(),
             ),
+            SizedBox(height: 10),
             ElevatedButton(
-              onPressed: _exportData,
+              onPressed: () => _exportData(_selectedTable),
               child: const Text('Export'),
             ),
-            const SizedBox(height: 20),
-            const Text(
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _exportAllData,
+              child: const Text('Export All Tables'),
+            ),
+            SizedBox(height: 20),
+            Text(
               'Import Data:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 10),
             ElevatedButton(
               onPressed: () async {
                 FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -162,4 +217,5 @@ class _ExportImportPageState extends State<ExportImportPage> {
       ),
     );
   }
+
 }
