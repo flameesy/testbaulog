@@ -106,6 +106,7 @@ class AppWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        bottom: true,
         child: SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(

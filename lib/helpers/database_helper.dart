@@ -205,6 +205,7 @@ class DatabaseHelper {
 
 
     for (final tableName in tables.keys) {
+      print(tableName);
       await database.execute(tables[tableName]!);
     }
   }
@@ -568,34 +569,36 @@ class DatabaseHelper {
 
   Future<List<PlatformFile>> getFilesForAppointment(int appointmentId) async {
     final List<Map<String, dynamic>> maps = await database.query(
-      'attachments',
+      'attachment',
       where: 'appointment_id = ?',
       whereArgs: [appointmentId],
     );
 
     return List.generate(maps.length, (i) {
       return PlatformFile(
-        path: maps[i]['path'],
-        name: maps[i]['name'],
-        size: maps[i]['size'],
-        bytes: maps[i]['bytes'],
-        identifier: maps[i]['identifier'],
+        path: maps[i]['file_path'],
+        name: maps[i]['file_path'], size: 0
       );
     });
   }
 
   Future<void> saveAttachmentForAppointment(int appointmentId, PlatformFile file) async {
     await database.insert(
-      'attachments',
+      'attachment',
       {
         'appointment_id': appointmentId,
-        'path': file.path,
-        'name': file.name,
-        'size': file.size,
-        'bytes': file.bytes,
-        'identifier': file.identifier,
+        'file_path': file.path,
+        'file_type': '.csv',
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> deleteAttachment(String filePath) async {
+    await database.delete(
+      'attachment',
+      where: 'file_path = ?',
+      whereArgs: [filePath],
     );
   }
 

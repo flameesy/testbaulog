@@ -1,51 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:testbaulog/widgets/custom_app_bar.dart';
-import 'package:testbaulog/widgets/custom_drawer.dart';
+import 'package:sqflite_common/sqlite_api.dart';
+import '../widgets/custom_app_bar.dart';
+import '../widgets/custom_drawer.dart';
 
 class HomePage extends StatelessWidget {
   final Database database;
 
-  const HomePage({super.key, required this.database});
+  const HomePage({Key? key, required this.database}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(),
-      body: Center(
+      body: SafeArea(
+        bottom: true,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: GridView.count(
+            crossAxisCount: 2,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
             children: [
-              Expanded(
-                child: _buildTile(
-                  context: context,
-                  title: 'Anzahl der Benutzer',
-                  valueFuture: _getUserCount(),
-                ),
+              _buildNavigationTile(
+                context,
+                icon: Icons.calendar_today,
+                title: 'Termine',
+                onTap: () {
+                  _navigateTo(context, '/termine');
+                },
               ),
-              Expanded(
-                child: _buildTile(
-                  context: context,
-                  title: 'Anzahl der Termine',
-                  valueFuture: _getAppointmentCount(),
-                ),
+              _buildNavigationTile(
+                context,
+                icon: Icons.email,
+                title: 'Email',
+                onTap: () {
+                  _navigateTo(context, '/mail');
+                },
               ),
-              Expanded(
-                child: _buildTile(
-                  context: context,
-                  title: 'Anzahl der Räume',
-                  valueFuture: _getRoomCount(),
-                ),
+              _buildNavigationTile(
+                context,
+                icon: Icons.subject,
+                title: 'Email-Templates',
+                onTap: () {
+                  _navigateTo(context, '/templates');
+                },
               ),
-              Expanded(
-                child: _buildTile(
-                  context: context,
-                  title: 'Anzahl der Gebäude',
-                  valueFuture: _getBuildingCount(),
-                ),
+              _buildNavigationTile(
+                context,
+                icon: Icons.business,
+                title: 'Räume',
+                onTap: () {
+                  _navigateTo(context, '/rooms');
+                },
+              ),
+              _buildNavigationTile(
+                context,
+                icon: Icons.reorder,
+                title: 'Bestellung',
+                onTap: () {
+                  _navigateTo(context, '/order');
+                },
+              ),
+              _buildNavigationTile(
+                context,
+                icon: Icons.import_export,
+                title: 'Export',
+                onTap: () {
+                  _navigateTo(context, '/einstellungen');
+                },
+              ),
+              _buildNavigationTile(
+                context,
+                icon: Icons.logout,
+                title: 'Logout',
+                onTap: () {
+                  _navigateTo(context, '/login');
+                },
               ),
             ],
           ),
@@ -55,70 +85,40 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Future<int> _getUserCount() async {
-    final List<Map<String, dynamic>> result =
-    await database.rawQuery('SELECT COUNT(*) as count FROM USERS;');
-    final int userCount = Sqflite.firstIntValue(result) ?? 0;
-    return userCount;
-  }
-
-  Future<int> _getAppointmentCount() async {
-    final List<Map<String, dynamic>> result =
-    await database.rawQuery('SELECT COUNT(*) as count FROM APPOINTMENT;');
-    final int userCount = Sqflite.firstIntValue(result) ?? 0;
-    return userCount;
-  }
-
-  Future<int> _getRoomCount() async {
-    final List<Map<String, dynamic>> result =
-    await database.rawQuery('SELECT COUNT(*) as count FROM ROOM;');
-    final int userCount = Sqflite.firstIntValue(result) ?? 0;
-    return userCount;
-  }
-
-  Future<int> _getBuildingCount() async {
-    final List<Map<String, dynamic>> result =
-    await database.rawQuery('SELECT COUNT(*) as count FROM BUILDING;');
-    final int userCount = Sqflite.firstIntValue(result) ?? 0;
-    return userCount;
-  }
-
-  Widget _buildTile({
-    required BuildContext context,
-    required String title,
-    required Future<dynamic> valueFuture,
-  }) {
-    return Card(
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+  Widget _buildNavigationTile(BuildContext context,
+      {required IconData icon, required String title, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 50,
+        width: 50,
+        decoration: BoxDecoration(
+          color: Colors.orange,
+          borderRadius: BorderRadius.circular(10),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Icon(
+              icon,
+              size: 40,
+              color: Colors.grey[800],
+            ),
+            SizedBox(height: 6),
             Text(
               title,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            FutureBuilder(
-              future: valueFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.hasError) {
-                  return Text('Error: ${snapshot.error}');
-                } else {
-                  return Text(
-                    '${snapshot.data}',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  );
-                }
-              },
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[800],
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _navigateTo(BuildContext context, String routeName) {
+    Navigator.pushNamed(context, routeName);
   }
 }

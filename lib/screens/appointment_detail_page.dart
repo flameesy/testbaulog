@@ -3,6 +3,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../helpers/database_helper.dart';
+import 'csv_viewer_page.dart';
 
 
 class AppointmentDetailPage extends StatefulWidget {
@@ -174,16 +175,32 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _attachFile,
-                child: Text('Datei anhängen'),
-              ),
-              const SizedBox(height: 20),
               _buildAttachmentList(),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _saveAppointment,
-                child: const Text('Speichern'),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ElevatedButton(
+                    onPressed: _attachFile,
+                    child: Text('Datei anhängen'),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: _saveAppointment,
+                        child: const Text('Speichern'),
+                      ),
+                      const SizedBox(width: 10), // Abstand zwischen den Buttons
+                      ElevatedButton(
+                        onPressed: () {
+                          // Aktion für den Löschen-Button hinzufügen
+                        },
+                        child: const Text('Löschen'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -295,11 +312,70 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: _attachmentFiles.map((file) {
-          return Text(file.name);
+          List<String> pathParts = file.name.split('/');
+          String fileName = pathParts.last;
+          return ListTile(
+            leading: Icon(Icons.attach_file),
+            title: Text(fileName),
+            trailing: IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                _showDeleteConfirmationDialog(file); // Zeige Dialog zum Löschen an
+              },
+            ),
+            onTap: () {
+              _showFileViewer(file.name); // Öffne Datei im Viewer
+            },
+          );
         }).toList(),
       );
     }
   }
+
+  void _showFileViewer(String filePath) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CSVViewerPage(filePath: filePath),
+      ),
+    );
+  }
+
+
+  Future<void> _showDeleteConfirmationDialog(PlatformFile file) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Anhang löschen'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Möchtest du diesen Anhang wirklich löschen?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Abbrechen'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Löschen'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Schließe Dialog
+                _deleteAttachment(file); // Lösche den Anhang
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
 
   Future<void> _saveAttachmentInDatabase(PlatformFile file) async {
     int appointmentId = widget.appointment['id'];
@@ -308,9 +384,24 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Datei erfolgreich angehängt!'),
       ));
+      await _getAttachmentFiles();
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Fehler beim Speichern der Datei: $error'),
+      ));
+    }
+  }
+
+  Future<void> _deleteAttachment(PlatformFile file) async {
+    try {
+      await widget.databaseHelper.deleteAttachment(file.name);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Anhang erfolgreich gelöscht!'),
+      ));
+      await _getAttachmentFiles(); // Aktualisiere die Liste der Anhänge
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Fehler beim Löschen des Anhangs: $error'),
       ));
     }
   }
