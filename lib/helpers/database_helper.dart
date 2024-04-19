@@ -594,11 +594,11 @@ class DatabaseHelper {
     );
   }
 
-  Future<void> deleteAttachment(String filePath) async {
+  Future<void> deleteAttachmentForAppointment(int appointmentId, String filePath) async {
     await database.delete(
       'attachment',
-      where: 'file_path = ?',
-      whereArgs: [filePath],
+      where: 'file_path = ?, appointment_id = ?',
+      whereArgs: [filePath,appointmentId],
     );
   }
 

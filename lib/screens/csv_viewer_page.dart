@@ -8,7 +8,7 @@ import 'package:csv/csv.dart';
 class CSVViewerPage extends StatefulWidget {
   final String filePath;
 
-  CSVViewerPage({super.key, required this.filePath});
+  CSVViewerPage({Key? key, required this.filePath}) : super(key: key);
 
   @override
   _CSVViewerPageState createState() => _CSVViewerPageState();
@@ -45,11 +45,13 @@ class _CSVViewerPageState extends State<CSVViewerPage> {
       body: _csvData != null
           ? SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: DataTable(
-          columns: _csvData![0].map((header) => DataColumn(label: Text(header.toString()))).toList(),
-          rows: _csvData!.sublist(1).map((row) {
-            return DataRow(cells: row.map((cell) => DataCell(Text(cell.toString()))).toList());
-          }).toList(),
+        child: SingleChildScrollView(
+          child: DataTable(
+            columns: _csvData![0].map((header) => DataColumn(label: Text(header.toString()))).toList(),
+            rows: _csvData!.sublist(1).map((row) {
+              return DataRow(cells: row.map((cell) => DataCell(Text(cell.toString()))).toList());
+            }).toList(),
+          ),
         ),
       )
           : const Center(
@@ -58,6 +60,3 @@ class _CSVViewerPageState extends State<CSVViewerPage> {
     );
   }
 }
-
-// Verwendung:
-// CSVViewerPage(filePath: '/data/user/0/com.example.baulog/APPOINTMENT.csv');

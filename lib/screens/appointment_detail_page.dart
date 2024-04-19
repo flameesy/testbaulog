@@ -394,7 +394,7 @@ class _AppointmentDetailPageState extends State<AppointmentDetailPage> {
 
   Future<void> _deleteAttachment(PlatformFile file) async {
     try {
-      await widget.databaseHelper.deleteAttachment(file.name);
+      await widget.databaseHelper.deleteAttachmentForAppointment(widget.appointment['id'],file.name);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Anhang erfolgreich gelöscht!'),
       ));

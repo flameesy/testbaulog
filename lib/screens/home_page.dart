@@ -28,6 +28,13 @@ class HomePage extends StatelessWidget {
                 onTap: () {
                   _navigateTo(context, '/termine');
                 },
+              ),_buildNavigationTile(
+                context,
+                icon: Icons.calendar_today,
+                title: 'Termine heute: 8',//_getAppointmentsToday(),
+                onTap: () {
+                  _navigateTo(context, '/termine');
+                },
               ),
               _buildNavigationTile(
                 context,
@@ -121,4 +128,8 @@ class HomePage extends StatelessWidget {
   void _navigateTo(BuildContext context, String routeName) {
     Navigator.pushNamed(context, routeName);
   }
+}
+
+class _getAppointmentsToday {
+
 }
