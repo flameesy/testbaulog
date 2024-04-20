@@ -92,7 +92,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         children: [
           FilterBar(
             onSearchChanged: _filterAppointments,
-            onSortChanged: (String) {},
+            onSortChanged: (test) {},
           ),
           CalendarCarousel(
             onDayPressed: (DateTime date, List<dynamic> events) {
@@ -103,10 +103,17 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             weekendTextStyle: TextStyle(color: Colors.red[300]),
             thisMonthDayBorderColor: Colors.grey,
             weekFormat: false,
-            height: 420.0,
+            height: 400.0,
             selectedDateTime: _selectedDay,
+            selectedDayTextStyle: const TextStyle(color: Colors.white),
+            selectedDayButtonColor: Colors.yellow.shade800,
+            selectedDayBorderColor: Colors.yellow.shade800,
+            todayButtonColor: Colors.red.shade100,
+            todayBorderColor: Colors.red.shade100,
             daysHaveCircularBorder: true,
+            headerMargin: const EdgeInsets.symmetric(vertical: 5.0),
             locale: 'de', // Setzen der Lokalisierung auf Deutsch
+            headerTextStyle: const TextStyle(fontSize: 20.0, color: Colors.black),
             customDayBuilder: (
                 bool isSelectable,
                 int index,
@@ -139,7 +146,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                         bottom: 2,
                         right: 2,
                         child: CircleAvatar(
-                          backgroundColor: Colors.white,
+                          backgroundColor: Colors.green.shade100,//TODO: Wechseln Sie die Farbe wenn es überfällige Termine gibt?
                           radius: 8,
                           child: Text(
                             '${_appointmentsByDate[day]!.length}',
