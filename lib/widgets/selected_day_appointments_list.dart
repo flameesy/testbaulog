@@ -27,7 +27,7 @@ class SelectedDayAppointmentsList extends StatelessWidget {
         if (index == appointments.length) {
           return ListTile(
             title: Text(
-              'Neuer Termin hinzufügen',
+              'Neuen Termin hinzufügen',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

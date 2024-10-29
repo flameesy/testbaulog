@@ -45,8 +45,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         final String endTime = appointment['end_time'] ?? '';
         final String text = appointment['text'] ?? '';
         final String description = appointment['description'] ?? '';
-        final int id = appointment['id'] ?? 0; // Feld 'id' hinzugefügt
-        final int roomId = appointment['room_id'] ?? 0; // Feld 'room_id' hinzugefügt
+        final int id = appointment['id'] ?? 0;
+        final int roomId = appointment['room_id'] ?? 0;
+
         final formattedAppointment = {
           'id': id,
           'room_id': roomId,
@@ -63,11 +64,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         _appointmentsByDate = _groupAppointmentsByDate(formattedAppointments);
       });
     } catch (e) {
-      print('Error fetching appointments: $e');
-      // Handle error if needed
+      print('Fehler beim Laden der Termine: $e');
     }
   }
-
 
   Map<DateTime, List<dynamic>> _groupAppointmentsByDate(
       List<Map<String, dynamic>> appointments) {
@@ -87,13 +86,18 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Termine'),
+        backgroundColor: Colors.blueAccent, // Optische Verbesserung
       ),
       body: Column(
         children: [
+          // Filter- und Suchleiste
           FilterBar(
             onSearchChanged: _filterAppointments,
-            onSortChanged: (test) {},
+            onSortChanged: (sortOption) {
+              // Beispiel: Sortierfunktion erweitern
+            },
           ),
+          // Kalenderansicht zur Terminübersicht
           CalendarCarousel(
             onDayPressed: (DateTime date, List<dynamic> events) {
               setState(() {
@@ -112,7 +116,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             todayBorderColor: Colors.red.shade100,
             daysHaveCircularBorder: true,
             headerMargin: const EdgeInsets.symmetric(vertical: 5.0),
-            locale: 'de', // Setzen der Lokalisierung auf Deutsch
+            locale: 'de',
             headerTextStyle: const TextStyle(fontSize: 20.0, color: Colors.black),
             customDayBuilder: (
                 bool isSelectable,
@@ -146,7 +150,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                         bottom: 2,
                         right: 2,
                         child: CircleAvatar(
-                          backgroundColor: Colors.green.shade100,//TODO: Wechseln Sie die Farbe wenn es überfällige Termine gibt?
+                          backgroundColor: Colors.green.shade100,
                           radius: 8,
                           child: Text(
                             '${_appointmentsByDate[day]!.length}',
@@ -195,7 +199,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     );
   }
 
-
   List<Map<String, dynamic>> _getEventsForDay(DateTime day) {
     List<Map<String, dynamic>> eventsList = [];
     List<dynamic> events = _appointmentsByDate[day] ?? [];
@@ -207,13 +210,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     return eventsList;
   }
 
-
-
-
-
   void _filterAppointments(String query) {
     if (query.isEmpty) {
-      fetchAppointments(); // Zeige alle Termine, wenn die Suchanfrage leer ist
+      fetchAppointments();
     } else {
       final filteredAppointments = _appointments.where((appointment) {
         final text = appointment['text']?.toString().toLowerCase() ?? '';
@@ -225,9 +224,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     }
   }
 
-
-  // Die Funktion, um zur Appointment-Detailseite zu navigieren
-  // In Ihrer AppointmentsPage-Klasse
   Future<dynamic> navigateToAppointmentDetailPage(BuildContext context, Map<String, dynamic> appointment, DatabaseHelper databaseHelper) {
     return Navigator.push(
       context,
@@ -236,8 +232,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
       ),
     );
   }
-
-
 
   @override
   void dispose() {

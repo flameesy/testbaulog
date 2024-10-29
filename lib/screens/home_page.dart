@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:sqflite_common/sqlite_api.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_drawer.dart';
+import '../helpers/database_helper.dart'; // Importiere deinen DatabaseHelper
 
 class HomePage extends StatelessWidget {
   final Database database;
 
-  const HomePage({Key? key, required this.database}) : super(key: key);
+  const HomePage({super.key, required this.database});
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +16,11 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         bottom: true,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(8.0),
           child: GridView.count(
             crossAxisCount: 2,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
+            mainAxisSpacing: 6,
+            crossAxisSpacing: 6,
             children: [
               _buildNavigationTile(
                 context,
@@ -28,12 +29,24 @@ class HomePage extends StatelessWidget {
                 onTap: () {
                   _navigateTo(context, '/termine');
                 },
-              ),_buildNavigationTile(
-                context,
-                icon: Icons.calendar_today,
-                title: 'Termine heute: 8',//_getAppointmentsToday(),
-                onTap: () {
-                  _navigateTo(context, '/termine');
+              ),
+              FutureBuilder<int>(
+                future: _getAppointmentsToday(), // Asynchrone Zählung der heutigen Termine
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator(); // Ladeanzeige
+                  } else if (snapshot.hasError) {
+                    return Text('Fehler: ${snapshot.error}');
+                  } else {
+                    return _buildNavigationTile(
+                      context,
+                      icon: Icons.calendar_today,
+                      title: 'Termine heute: ${snapshot.data}', // Anzahl der heutigen Termine
+                      onTap: () {
+                        _navigateTo(context, '/termineheute');
+                      },
+                    );
+                  }
                 },
               ),
               _buildNavigationTile(
@@ -108,10 +121,10 @@ class HomePage extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 40,
+              size: 50,
               color: Colors.grey[800],
             ),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             Text(
               title,
               style: TextStyle(
@@ -128,8 +141,20 @@ class HomePage extends StatelessWidget {
   void _navigateTo(BuildContext context, String routeName) {
     Navigator.pushNamed(context, routeName);
   }
-}
 
-class _getAppointmentsToday {
+  Future<int> _getAppointmentsToday() async {
+    final databaseHelper = DatabaseHelper(database: database);
+    final appointments = await databaseHelper.fetchAppointments();
+    final DateTime today = DateTime.now();
 
+    // Filtere die heutigen Termine
+    final int todayCount = appointments.where((appointment) {
+      final DateTime appointmentDate = DateTime.parse(appointment['appointment_date']);
+      return appointmentDate.year == today.year &&
+          appointmentDate.month == today.month &&
+          appointmentDate.day == today.day;
+    }).length;
+
+    return todayCount;
+  }
 }

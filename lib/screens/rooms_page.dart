@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:testbaulog/screens/room_detail_page.dart';
 import 'package:grouped_list/grouped_list.dart';
+import '../helpers/animated_card.dart';
 import '../helpers/database_helper.dart';
 import '../widgets/add_room_dialog.dart';
 import '../widgets/filter_bar.dart';
@@ -35,7 +36,6 @@ class _RoomsPageState extends State<RoomsPage> {
     final DatabaseHelper dbHelper = DatabaseHelper(database: widget.database);
     try {
       final List<Map<String, dynamic>> rooms = await dbHelper.fetchItems('ROOM');
-
       if (mounted) {
         setState(() {
           _rooms = rooms;
@@ -43,7 +43,6 @@ class _RoomsPageState extends State<RoomsPage> {
       }
     } catch (e) {
       print('Error fetching rooms: $e');
-      // Handle error if needed
     }
   }
 
@@ -51,7 +50,6 @@ class _RoomsPageState extends State<RoomsPage> {
     final DatabaseHelper dbHelper = DatabaseHelper(database: widget.database);
     try {
       final List<Map<String, dynamic>> levels = await dbHelper.fetchItems('LEVEL');
-
       if (mounted) {
         setState(() {
           _levels = levels;
@@ -59,7 +57,6 @@ class _RoomsPageState extends State<RoomsPage> {
       }
     } catch (e) {
       print('Error fetching levels: $e');
-      // Handle error if needed
     }
   }
 
@@ -77,28 +74,16 @@ class _RoomsPageState extends State<RoomsPage> {
     }
   }
 
-  Color _getBackgroundColor(int access) {
-    switch (access) {
-      case 0:
-        return Colors.white;
-      case 1:
-        return Colors.grey[200]!;
-      case 2:
-        return Colors.grey[400]!;
-      case 3:
-        return Colors.grey[600]!;
-      default:
-        return Colors.white;
-    }
-  }
-
-  Color _getTileColor(int index) {
+  Color _getTileColor(int levelId) {
+    // Use a dynamic color scheme based on the level ID
     List<Color> colors = [
       Colors.red[100]!,
       Colors.blue[100]!,
+      Colors.green[100]!,
       Colors.orange[100]!,
+      Colors.purple[100]!,
     ];
-    return colors[index % 3];
+    return colors[levelId % colors.length];
   }
 
   void _filterRooms(String query) {
@@ -119,24 +104,27 @@ class _RoomsPageState extends State<RoomsPage> {
   }
 
   void _editLevel(Map<String, dynamic> levelData) {
-    // Implement logic to edit level
-    // Assuming you navigate to a new screen for editing level
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => EditLevelPage(levelData: levelData, databaseHelper: DatabaseHelper(database: widget.database)),
       ),
     ).then((_) {
-      // This function will be called after returning from RoomDetailPage
       fetchRooms(); // Update room list
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // Filter the rooms based on the search query
+    final filteredRooms = _rooms.where((room) {
+      return room['name'].toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Räume'),
+        title: const Text('Räume', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.blueAccent,
       ),
       body: Column(
         children: [
@@ -145,111 +133,101 @@ class _RoomsPageState extends State<RoomsPage> {
             onSortChanged: _sortRooms,
           ),
           Expanded(
-            child: _rooms.isNotEmpty
+            child: filteredRooms.isNotEmpty
                 ? GroupedListView<dynamic, String>(
-              elements: _rooms,
+              elements: filteredRooms,
               groupBy: (room) {
                 final levelId = room['level_id'];
                 final buildingId = room['building_id'];
-
-                if (levelId != null && buildingId != null) {
-                  final levelIdString = levelId.toString();
-                  final buildingIdString = buildingId.toString();
-                  return '${levelIdString}_$buildingIdString';
-                } else if (levelId != null && buildingId == null) {
-                  final levelIdString = levelId.toString();
-                  return levelIdString;
-                } else {
-                  return '';
-                }
+                return '${levelId}_${buildingId}';
               },
               groupSeparatorBuilder: (String groupByValue) {
-                final levelId = int.tryParse(groupByValue) ?? 0;
+                final levelId = int.tryParse(groupByValue.split('_')[0]) ?? 0;
+                final buildingId = groupByValue.split('_')[1];
                 final levelData = _levels.firstWhere(
                       (level) => level['id'] == levelId,
                   orElse: () => {},
                 );
 
                 if (levelData.isNotEmpty) {
-                  return ListTile(
-                    title: Text('Level ${levelData['id']} - Gebäude ${levelData['building_id']}'),
-                    tileColor: Colors.grey[300],
-                    onTap: () {
-                      _editLevel(levelData);
-                    },
+                  return Card(
+                    color: Colors.grey[300],
+                    child: ListTile(
+                      title: Text('Level ${levelData['id']} - Gebäude ${levelData['building_id']}',
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () {
+                          _editLevel(levelData);
+                        },
+                      ),
+                    ),
                   );
                 } else {
-                  return const SizedBox(); // Return an empty widget if no matching level data found
+                  return const SizedBox();
                 }
               },
               itemBuilder: (context, room) => Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: _getTileColor(room['level_id']),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: ListTile(
-                      title: Text(
-                        '${room['name']} (${room['id']})',
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                      subtitle: Text(
-                        'Zugang: ${room['access']}',
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                      trailing: FutureBuilder<int>(
-                        future: countAppointmentsInRoom(room['id']),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const CircularProgressIndicator();
-                          } else if (snapshot.hasError) {
-                            return const Text('Error');
-                          } else {
-                            final int count = snapshot.data ?? 0;
-                            return Text('$count Termine');
-                          }
-                        },
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RoomDetailPage(
-                              room: room,
-                              database: widget.database,
-                            ),
-                          ),
-                        );
+                padding: const EdgeInsets.symmetric(vertical: 1.0, horizontal: 8.0),
+                child: AnimatedCard(
+                  color: _getTileColor(room['level_id']),
+                  child: ListTile(
+                    title: Text(
+                      '${room['name']} (${room['id']})',
+                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Text(
+                      'Zugang: ${room['access']}',
+                      style: const TextStyle(color: Colors.black54),
+                    ),
+                    trailing: FutureBuilder<int>(
+                      future: countAppointmentsInRoom(room['id']),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (snapshot.hasError) {
+                          return const Text('Error', style: TextStyle(color: Colors.red));
+                        } else {
+                          final int count = snapshot.data ?? 0;
+                          return Text('$count Termine', style: const TextStyle(color: Colors.black54));
+                        }
                       },
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RoomDetailPage(
+                            room: room,
+                            database: widget.database,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
             )
                 : const Center(
-              child: Text('Keine Räume vorhanden'),
+              child: Text('Keine Räume vorhanden', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
             ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Zeige den AddRoomDialog an
           await showDialog(
             context: context,
             builder: (BuildContext context) {
               return AddRoomDialog(database: widget.database);
             },
           );
-
-          // Aktualisiere die Raumliste, nachdem der Dialog geschlossen wurde
-          fetchRooms();
+          fetchRooms(); // Update room list after adding a new room
         },
         child: const Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
       ),
     );
   }
+
 }

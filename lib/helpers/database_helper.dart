@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:bcrypt/bcrypt.dart';
@@ -70,7 +71,7 @@ class DatabaseHelper {
       record_id INTEGER NOT NULL,
       action TEXT NOT NULL,
       sync_status INTEGER DEFAULT 0,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP 
     )
   ''',
       'SYNC_HISTORY': '''
@@ -216,6 +217,26 @@ class DatabaseHelper {
     }
   }
 
+
+  Future<void> insertExampleData() async {
+    try {
+      // Lade den Inhalt der freshexamples.sql Datei
+      String sqlContent = await rootBundle.loadString('assets/freshexamples.sql');
+
+      // Splitte den SQL-Text anhand von Semikolons, um jedes Statement einzeln auszuführen
+      List<String> sqlStatements = sqlContent.split(';');
+
+      // Führe jedes SQL-Statement aus
+      for (var statement in sqlStatements) {
+        if (statement.trim().isNotEmpty) {
+          await database.execute(statement);
+        }
+      }
+      print("Beispieldaten wurden erfolgreich eingefügt.");
+    } catch (e) {
+      print("Fehler beim Einfügen der Beispieldaten: $e");
+    }
+  }
 
 
   Future<void> insertUser(String email, String password) async {

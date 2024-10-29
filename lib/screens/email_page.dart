@@ -1,14 +1,13 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sqflite_common/sqlite_api.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../helpers/database_helper.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:html_editor_enhanced/html_editor.dart'; // Füge das HTML-Editor-Paket hinzu
 
 class EmailPage extends StatefulWidget {
   final Database database;
-
   const EmailPage({super.key, required this.database});
 
   @override
@@ -16,247 +15,151 @@ class EmailPage extends StatefulWidget {
 }
 
 class _EmailPageState extends State<EmailPage> {
-  int? _selectedTemplateId;
-  List<Map<String, dynamic>> _emailTemplates = [];
-  late DatabaseHelper _databaseHelper;
   final _formKey = GlobalKey<FormState>();
   final _recipientController = TextEditingController();
-  final _ccController = TextEditingController();
-  final _bccController = TextEditingController();
   final _subjectController = TextEditingController();
-  final _bodyController = TextEditingController();
-  XFile? _imageFile; // Neu hinzugefügt
+  final HtmlEditorController _htmlEditorController = HtmlEditorController();
+  bool showCcBccFields = false;
+  final List<File> _attachments = [];
 
   @override
-  void initState() {
-    super.initState();
-    _databaseHelper = DatabaseHelper(database: widget.database);
-    _loadEmailTemplates();
+  void dispose() {
+    _recipientController.dispose();
+    _subjectController.dispose();
+    super.dispose();
   }
 
-  Future<void> _loadEmailTemplates() async {
-    try {
-      final List<Map<String, dynamic>> templates =
-      await _databaseHelper.fetchItems('EMAIL_TEMPLATE');
+  void _toggleCcBcc() {
+    setState(() {
+      showCcBccFields = !showCcBccFields;
+    });
+  }
+
+  Future<void> _pickAttachment() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null && result.files.isNotEmpty) {
       setState(() {
-        _emailTemplates = templates;
+        _attachments.add(File(result.files.single.path!));
       });
-    } catch (e) {
-      print('Error loading email templates: $e');
     }
   }
 
-  void _selectTemplate(int templateId) {
-    final selectedTemplate = _emailTemplates
-        .firstWhere((template) => template['id'] == templateId);
-    setState(() {
-      _selectedTemplateId = templateId;
-      _subjectController.text =
-          _replacePlaceholders(selectedTemplate['subject']);
-      _bodyController.text = _replacePlaceholders(selectedTemplate['body']);
-    });
-  }
-
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      _imageFile = pickedFile;
-    });
-  }
-
-  void _sendEmail() async {
-    if (_formKey.currentState!.validate()) {
-      final recipient = _recipientController.text;
-      final cc = _ccController.text;
-      final bcc = _bccController.text;
-      final subject = _subjectController.text;
-      final body = _replacePlaceholders(_bodyController.text);
-
-      try {
-        final String emailUriString =
-            'mailto:$recipient?cc=$cc&bcc=$bcc&subject=$subject&body=$body';
-
-        // Öffnen der E-Mail-App mit der HTML-formatierten E-Mail
-        await launchUrl(Uri.parse(emailUriString));
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email sent and saved!')),
-        );
-      } catch (e) {
-        print('Error saving email: $e');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error saving email')),
-        );
-      }
-    }
-  }
-
-  // Methode zum Laden des Bilds
-  Future<void> _loadImage() async {
+  Future<void> _addImageToBody() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
-        _imageFile = pickedFile;
-      });
+      final bytes = await pickedFile.readAsBytes();
+      final base64Image = base64Encode(bytes);
+      final imgTag = '<img src="data:image/png;base64,$base64Image">';
+
+      // Holt den aktuellen Inhalt des Editors und fügt das Bild hinzu
+      String? currentText = await _htmlEditorController.getText();
+      String newText = currentText != null ? currentText + imgTag : imgTag;
+      _htmlEditorController.setText(newText); // Bild im Editor hinzufügen
     }
   }
-
-// Methode zum Einbetten des Bilds in den E-Mail-Body
-  Future<String> _embedImage() async {
-    if (_imageFile != null) {
-      final bytes = await _imageFile!.readAsBytes();
-      final String base64Image = base64Encode(bytes);
-      return 'data:image/png;base64,$base64Image';
-    } else {
-      return ''; // Falls kein Bild ausgewählt wurde
-    }
-  }
-
-// Methode zum Ersetzen der Platzhalter und Einbetten des Bilds
-  String _replacePlaceholders(String body) {
-    // Hier ersetzen Sie die Platzhalter in der Vorlage durch die entsprechenden Werte
-    body = body.replaceAll('[ORDER_ID]', '55432');
-    body = body.replaceAll('[CHEF]', 'Oli');
-    return body;
-  }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Send Email',
-          style: TextStyle(fontSize: 20.0),
-        ),
+        title: const Text('E-Mail mit Anhängen senden'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
-            children: [
-              const SizedBox(height: 20),
-              DropdownButtonFormField<int>(
-                value: _selectedTemplateId,
-                items: [
-                  const DropdownMenuItem<int>(
-                    value: null, // Standardwert auf null setzen
-                    child: Text('Select Email Template'),
+          child: SingleChildScrollView( // Hinzugefügt für Scrollbarkeit
+            child: Column( // Ändere ListView in Column
+              children: [
+                TextFormField(
+                  controller: _recipientController,
+                  decoration: const InputDecoration(
+                    labelText: 'An',
+                    border: OutlineInputBorder(),
                   ),
-                  ..._emailTemplates.map<DropdownMenuItem<int>>(
-                        (template) => DropdownMenuItem<int>(
-                      value: template['id'],
-                      child: Text(template['name'] ?? ''),
+                  validator: (value) => value == null || value.isEmpty ? 'Bitte Empfänger eingeben' : null,
+                ),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: _toggleCcBcc,
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'CC / BCC hinzufügen',
+                        style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                      ),
+                    ],
+                  ),
+                ),
+                if (showCcBccFields) ...[
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'CC',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'BCC',
+                      border: OutlineInputBorder(),
                     ),
                   ),
                 ],
-                onChanged: (int? newValue) {
-                  if (newValue != null) {
-                    _selectTemplate(newValue);
-                  }
-                },
-                decoration: const InputDecoration(
-                  labelText: 'Select Email Template',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(12.0),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _subjectController,
+                  decoration: const InputDecoration(
+                    labelText: 'Betreff',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null || value.isEmpty ? 'Bitte Betreff eingeben' : null,
                 ),
-              ),
-
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _recipientController,
-                decoration: const InputDecoration(
-                  labelText: 'To:',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(12.0),
+                const SizedBox(height: 16),
+                // Hier den HtmlEditor hinzufügen
+                SizedBox(
+                  height: 400, // Höhe anpassen
+                  child: HtmlEditor(
+                    controller: _htmlEditorController,
+                    htmlEditorOptions: HtmlEditorOptions(
+                      initialText: "E-Mail-Text hier eingeben...",
+                      shouldEnsureVisible: true,
+                    ),
+                    otherOptions: OtherOptions(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                      ),
+                    ),
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter recipient email';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _ccController,
-                decoration: const InputDecoration(
-                  labelText: 'CC:',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(12.0),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _addImageToBody,
+                  child: const Text('Bild zum E-Mail-Text hinzufügen'),
                 ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _bccController,
-                decoration: const InputDecoration(
-                  labelText: 'BCC:',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(12.0),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: _pickAttachment,
+                  child: const Text('Anhang hinzufügen'),
                 ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: _subjectController,
-                decoration: const InputDecoration(
-                  labelText: 'Betreff:',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(12.0),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // Hier kannst du die Logik für das Senden der E-Mail einfügen
+                      // Du kannst den HTML-Inhalt mit _htmlEditorController.getText() abrufen
+                    }
+                  },
+                  child: const Text('E-Mail senden'),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Bitte Betreff eingeben';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 30),
-              TextFormField(
-                controller: _bodyController,
-                minLines: 5,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-                decoration: const InputDecoration(
-                  labelText: 'Text:',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.all(12.0),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter email body';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _sendEmail,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14.0),
-                ),
-                child: const Text(
-                  'Send Email',
-                  style: TextStyle(fontSize: 18.0),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _recipientController.dispose();
-    _ccController.dispose();
-    _bccController.dispose();
-    _subjectController.dispose();
-    _bodyController.dispose();
-    super.dispose();
   }
 }

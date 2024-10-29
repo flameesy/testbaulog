@@ -225,9 +225,9 @@
     },
     {
       "name": "file_picker",
-      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/file_picker-5.5.0",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/file_picker-8.0.5",
       "packageUri": "lib/",
-      "languageVersion": "2.17"
+      "languageVersion": "2.19"
     },
     {
       "name": "file_selector_linux",
@@ -260,6 +260,18 @@
       "languageVersion": "2.19"
     },
     {
+      "name": "flex_color_picker",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flex_color_picker-3.4.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "flex_seed_scheme",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flex_seed_scheme-1.5.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "flutter",
       "rootUri": "file:///C:/Users/Simon/dev/flutter/packages/flutter",
       "packageUri": "lib/",
@@ -272,6 +284,90 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "flutter_email_sender",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_email_sender-5.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_inappwebview",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_inappwebview-6.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "flutter_inappwebview_android",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_inappwebview_android-1.0.13",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "flutter_inappwebview_internal_annotations",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_inappwebview_internal_annotations-1.1.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
+      "name": "flutter_inappwebview_ios",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_inappwebview_ios-1.0.13",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "flutter_inappwebview_macos",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_inappwebview_macos-1.0.11",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "flutter_inappwebview_platform_interface",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_inappwebview_platform_interface-1.0.10",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "flutter_inappwebview_web",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_inappwebview_web-1.0.8",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
+      "name": "flutter_keyboard_visibility",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_keyboard_visibility-6.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_keyboard_visibility_linux",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_keyboard_visibility_linux-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_keyboard_visibility_macos",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_keyboard_visibility_macos-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_keyboard_visibility_platform_interface",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_keyboard_visibility_platform_interface-2.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_keyboard_visibility_web",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_keyboard_visibility_web-2.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_keyboard_visibility_windows",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_keyboard_visibility_windows-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "flutter_launcher_icons",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_launcher_icons-0.9.3",
       "packageUri": "lib/",
@@ -279,7 +375,7 @@
     },
     {
       "name": "flutter_lints",
-      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-3.0.2",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-4.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.1"
     },
@@ -298,6 +394,12 @@
     {
       "name": "flutter_slidable",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_slidable-0.6.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "flutter_staggered_grid_view",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_staggered_grid_view-0.4.1",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -326,6 +428,12 @@
       "languageVersion": "2.19"
     },
     {
+      "name": "google_fonts",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/google_fonts-2.3.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "graphs",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/graphs-2.3.1",
       "packageUri": "lib/",
@@ -336,6 +444,12 @@
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/grouped_list-5.1.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "html_editor_enhanced",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/html_editor_enhanced-2.6.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "http",
@@ -410,6 +524,12 @@
       "languageVersion": "2.19"
     },
     {
+      "name": "infinite_listview",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/infinite_listview-1.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "intl",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/intl-0.18.1",
       "packageUri": "lib/",
@@ -453,9 +573,9 @@
     },
     {
       "name": "lints",
-      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/lints-3.0.0",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/lints-4.0.0",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.1"
     },
     {
       "name": "logging",
@@ -490,6 +610,12 @@
     {
       "name": "nested",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/nested-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "numberpicker",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/numberpicker-2.1.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -594,6 +720,30 @@
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/plugin_platform_interface-2.1.8",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+    },
+    {
+      "name": "pointer_interceptor",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/pointer_interceptor-0.10.1+2",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "pointer_interceptor_ios",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/pointer_interceptor_ios-0.10.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "pointer_interceptor_platform_interface",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/pointer_interceptor_platform_interface-0.10.0+1",
+      "packageUri": "lib/",
+      "languageVersion": "3.1"
+    },
+    {
+      "name": "pointer_interceptor_web",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/pointer_interceptor_web-0.10.2+1",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
     },
     {
       "name": "pointycastle",
@@ -842,6 +992,12 @@
       "languageVersion": "2.14"
     },
     {
+      "name": "visibility_detector",
+      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/visibility_detector-0.4.0+2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "vm_service",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-13.0.0",
       "packageUri": "lib/",
@@ -896,7 +1052,7 @@
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2024-04-19T20:33:14.554421Z",
+  "generated": "2024-10-29T19:54:54.833999Z",
   "generator": "pub",
   "generatorVersion": "3.3.3"
 }

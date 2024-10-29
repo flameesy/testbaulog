@@ -11,6 +11,7 @@ import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart'
 if (dart.library.html) 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:testbaulog/screens/email_templates_page.dart';
 import 'package:testbaulog/screens/export_import_page.dart';
+import 'package:testbaulog/screens/todayortomorrowappointments_page.dart';
 
 import 'helpers/database_helper.dart';
 import 'screens/appointments_page.dart';
@@ -31,6 +32,7 @@ Future<Database> initializeDatabase() async {
   late Database database;
 
   if (kIsWeb) {
+    // Web-spezifische Initialisierung
     var data = await rootBundle.load('assets/baulog.db');
     data.buffer.asUint8List();
     database = await databaseFactoryFfiWeb.openDatabase(
@@ -43,24 +45,32 @@ Future<Database> initializeDatabase() async {
       ),
     );
   } else {
+    // Pfad für die mobile Datenbank
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "baulog.db");
-    if (FileSystemEntity.typeSync(path) == FileSystemEntityType.notFound) {
-      ByteData data = await rootBundle.load(join('assets', 'baulog.db'));
-      List<int> bytes =
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-      await File(path).writeAsBytes(bytes);
-    }
+
+    // Löschen der alten Datenbank, falls vorhanden
+    //if (await File(path).exists()) {
+    //  await File(path).delete();
+    //}
+
+    // Datenbank neu erstellen
+    ByteData data = await rootBundle.load(join('assets', 'baulog.db'));
+    List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+    await File(path).writeAsBytes(bytes);
+
     database = await openDatabase(path);
   }
 
   DatabaseHelper databaseHelper = DatabaseHelper(database: database);
   await databaseHelper.createTablesIfNotExists();
-  //await printEmailTemplates(databaseHelper);
-  await databaseHelper.insertUser('demo', '123');
+  await databaseHelper.insertExampleData();
+  await databaseHelper.insertUser('demo', '134');
   await databaseHelper.insertUser('oli', 'passwort');
+
   return database;
 }
+
 
 Future<void> printEmailTemplates(databaseHelper) async {
   try {
@@ -92,6 +102,7 @@ class MyApp extends StatelessWidget {
         '/rooms': (context) => AppWrapper(child: RoomsPage(database: database)),
         '/order': (context) => AppWrapper(child: OrderPage(database: database)),
         '/einstellungen': (context) => AppWrapper(child: ExportImportPage(database: database)),
+        '/termineheute': (context) => AppWrapper(child: TodayOrTomorrowAppointmentsPage(database: database)),
       },
       theme: BauLogTheme.getTheme(),
     );

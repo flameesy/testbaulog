@@ -9,7 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 class ExportImportPage extends StatefulWidget {
   final Database database;
 
-  const ExportImportPage({Key? key, required this.database}) : super(key: key);
+  const ExportImportPage({super.key, required this.database});
 
   @override
   _ExportImportPageState createState() => _ExportImportPageState();
@@ -104,10 +104,10 @@ class _ExportImportPageState extends State<ExportImportPage> {
       String? selectedTable = await showDialog<String>(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Select table to import into'),
+          title: const Text('Select table to import into'),
           content: DropdownButton<String>(
             value: _selectedTable,
-            hint: Text('Select a table'),
+            hint: const Text('Select a table'),
             onChanged: (value) {
               setState(() {
                 _selectedTable = value;
@@ -166,11 +166,11 @@ class _ExportImportPageState extends State<ExportImportPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
+            const Text(
               'Export Data:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             DropdownButton<String>(
               value: _selectedTable,
               hint: const Text('Select a table'),
@@ -186,22 +186,22 @@ class _ExportImportPageState extends State<ExportImportPage> {
                 );
               }).toList(),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () => _exportData(_selectedTable),
               child: const Text('Export'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _exportAllData,
               child: const Text('Export All Tables'),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Import Data:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () async {
                 FilePickerResult? result = await FilePicker.platform.pickFiles(
