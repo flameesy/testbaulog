@@ -428,12 +428,6 @@
       "languageVersion": "2.19"
     },
     {
-      "name": "google_fonts",
-      "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/google_fonts-2.3.3",
-      "packageUri": "lib/",
-      "languageVersion": "2.12"
-    },
-    {
       "name": "graphs",
       "rootUri": "file:///C:/Users/Simon/AppData/Local/Pub/Cache/hosted/pub.dev/graphs-2.3.1",
       "packageUri": "lib/",
@@ -1052,7 +1046,7 @@
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2024-10-29T19:54:54.833999Z",
+  "generated": "2024-10-29T20:37:57.535958Z",
   "generator": "pub",
   "generatorVersion": "3.3.3"
 }
